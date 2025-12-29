@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicStore</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="brand">MusicStore</a>
+            <div class="nav-links">
+                <a href="#">home</a>
+                <a href="#">about</a>
+                <a href="#">contact</a>
+                <button id="show-login" class="btn-secondary">sign in</button>
+                <button id="show-signup" class="btn-primary">connection</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- <div class="hero">
+            <h1>Find Your Rhythm</h1>
+            <p>Discover the best instruments and equipment for your musical journey.</p>
+        </div>-->
+
+        <section id="instruments-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="section-title" style="margin-bottom: 0;">Find Your Rhythm</h2>
+                <button id="show-add-instr-btn" class="btn-primary">Add Instrument</button>
+            </div>
+            <div id="instruments-grid" class="grid-container">
+                Instruments will be loaded here
+                <div class="loading">Loading instruments...</div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="pagination-controls" class="pagination">
+                <button id="prev-page" class="btn-secondary" disabled>← Previous</button>
+                <span id="page-info" class="page-info">Page 1 of 1</span>
+                <button id="next-page" class="btn-secondary" disabled>Next →</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modals -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+
+            <!-- Login Form -->
+            <div id="login-form-container">
+                <h2>Sign In</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Sign In</button>
+                </form>
+                <p class="switch-auth">New here? <a href="#" id="switch-to-signup">Create an account</a></p>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form-container" class="hidden">
+                <h2>Create Account</h2>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-nom">Name</label>
+                        <input type="text" id="signup-nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Sign Up</button>
+                </form>
+                <p class="switch-auth">Already have an account? <a href="#" id="switch-to-login">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Instrument Modal -->
+    <div id="add-instr-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-instr-modal close-modal">&times;</span>
+            <h2>Add Instrument</h2>
+            <form id="add-instr-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="instr-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Type (e.g. Guitar, Piano)</label>
+                    <input type="text" id="instr-type" required>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="instr-marque">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="instr-prix">
+                </div>
+                <div class="form-group">
+                    <label>Condition (Etat)</label>
+                    <input type="text" id="instr-etat" placeholder="Neuf, Occasion, Excellent...">
+                </div>
+                <div class="form-group">
+                    <label>Characteristics (Caractéristiques)</label>
+                    <textarea id="instr-caracteristique" rows="3" placeholder="Détails, spécifications..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="instr-image">
+                </div>
+                <button type="submit" class="btn-primary full-width">Add Instrument</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
