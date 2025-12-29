@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutBtn = document.getElementById('logout-btn');
         const userGreeting = document.getElementById('user-greeting');
         const userName = document.getElementById('user-name');
+        const addInstrBtn = document.getElementById('show-add-instr-btn');
 
         if (currentUser) {
             // User is logged in
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.style.display = 'inline-block';
             userGreeting.style.display = 'inline-block';
             userName.textContent = currentUser.nom;
+            if (addInstrBtn) addInstrBtn.style.display = 'inline-block';
             updateFavoritesCount();
         } else {
             // User is not logged in
@@ -74,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.style.display = 'none';
             userGreeting.style.display = 'none';
             userName.textContent = '';
+            if (addInstrBtn) addInstrBtn.style.display = 'none';
             document.getElementById('my-favorites-btn').style.display = 'none';
         }
     }
@@ -621,11 +624,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const favoriteClass = isFavorite(inst.id) ? 'favorite-active' : '';
             const heartIcon = isFavorite(inst.id) ? '❤️' : '🤍';
 
+            // Only show action buttons if user is logged in
+            const actionButtons = currentUser ? `
+                <div class="card-actions">
+                    <button class="btn-update" data-id="${inst.id}">Update</button>
+                    <button class="btn-delete" data-id="${inst.id}" data-name="${inst.nom}">Delete</button>
+                </div>
+            ` : '';
+
+            // Only show favorite button if user is logged in
+            const favoriteButton = currentUser ? `
+                <button class="favorite-btn ${favoriteClass}" data-id="${inst.id}" data-name="${inst.nom}" title="Add to favorites">
+                    <span class="heart-icon">${heartIcon}</span>
+                </button>
+            ` : '';
+
             card.innerHTML = `
                 <div class="card-header">
-                    <button class="favorite-btn ${favoriteClass}" data-id="${inst.id}" data-name="${inst.nom}" title="Add to favorites">
-                        <span class="heart-icon">${heartIcon}</span>
-                    </button>
+                    ${favoriteButton}
                 </div>
                 <img src="${imgSrc}" alt="${inst.nom}" class="card-image">
                 <div class="card-content">
@@ -637,10 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="card-price">${inst.prix} €</span>
                         <span class="card-status ${statusClass}">${inst.status}</span>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn-update" data-id="${inst.id}">Update</button>
-                        <button class="btn-delete" data-id="${inst.id}" data-name="${inst.nom}">Delete</button>
-                    </div>
+                    ${actionButtons}
                 </div>
             `;
             grid.appendChild(card);
