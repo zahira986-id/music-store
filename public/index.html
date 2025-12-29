@@ -22,6 +22,13 @@
                 <a href="#">home</a>
                 <a href="#">about</a>
                 <a href="#">contact</a>
+                <button id="my-favorites-btn" class="btn-secondary" style="display: none;">
+                    ❤️ My Favorites (<span id="favorites-count">0</span>)
+                </button>
+                <span id="user-greeting" style="display: none; color: var(--text-color); font-weight: 500;">
+                    Hello, <span id="user-name"></span>!
+                </span>
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
                 <button id="show-login" class="btn-secondary">sign in</button>
                 <button id="show-signup" class="btn-primary">connection</button>
             </div>
@@ -191,6 +198,17 @@
                 </div>
                 <button type="submit" class="btn-primary full-width">Update Instrument</button>
             </form>
+        </div>
+    </div>
+
+    <!-- My Favorites Modal -->
+    <div id="favorites-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close-favorites-modal close-modal">&times;</span>
+            <h2>❤️ My Favorite Instruments</h2>
+            <div id="favorites-list" class="grid-container">
+                <div class="loading">Loading your favorites...</div>
+            </div>
         </div>
     </div>
 

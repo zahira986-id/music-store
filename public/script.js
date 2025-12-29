@@ -1,35 +1,180 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Favorites Management
-    function getFavorites() {
-        const favorites = localStorage.getItem('musicstore-favorites');
-        return favorites ? JSON.parse(favorites) : [];
+    // User state
+    let currentUser = null;
+    let userFavorites = [];
+
+    // Check if user is logged in
+    async function checkAuth() {
+        try {
+            const response = await fetch('/api/user');
+            if (response.ok) {
+                currentUser = await response.json();
+                await loadFavorites();
+                updateAuthUI();
+            } else {
+                updateAuthUI();
+            }
+        } catch (error) {
+            console.log('User not logged in');
+            updateAuthUI();
+        }
     }
 
-    function saveFavorites(favorites) {
-        localStorage.setItem('musicstore-favorites', JSON.stringify(favorites));
+    // Load favorites from database
+    async function loadFavorites() {
+        if (!currentUser) return;
+
+        try {
+            const response = await fetch('/api/favorites');
+            if (response.ok) {
+                userFavorites = await response.json();
+                updateFavoritesCount();
+            }
+        } catch (error) {
+            console.error('Error loading favorites:', error);
+        }
     }
 
-    function toggleFavorite(id, name) {
-        let favorites = getFavorites();
-        const index = favorites.indexOf(id);
+    // Update favorites count in UI
+    function updateFavoritesCount() {
+        const countEl = document.getElementById('favorites-count');
+        const myFavBtn = document.getElementById('my-favorites-btn');
 
-        if (index > -1) {
-            // Remove from favorites
-            favorites.splice(index, 1);
-            showNotification(`"${name}" removed from favorites`, 'success');
+        if (currentUser && userFavorites.length > 0) {
+            countEl.textContent = userFavorites.length;
+            myFavBtn.style.display = 'inline-block';
+        } else if (currentUser) {
+            countEl.textContent = '0';
+            myFavBtn.style.display = 'inline-block';
         } else {
-            // Add to favorites
-            favorites.push(id);
-            showNotification(`"${name}" added to favorites ❤️`, 'success');
+            myFavBtn.style.display = 'none';
+        }
+    }
+
+    // Update UI based on auth state
+    function updateAuthUI() {
+        const showLoginBtn = document.getElementById('show-login');
+        const showSignupBtn = document.getElementById('show-signup');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userGreeting = document.getElementById('user-greeting');
+        const userName = document.getElementById('user-name');
+
+        if (currentUser) {
+            // User is logged in
+            showLoginBtn.style.display = 'none';
+            showSignupBtn.style.display = 'none';
+            logoutBtn.style.display = 'inline-block';
+            userGreeting.style.display = 'inline-block';
+            userName.textContent = currentUser.nom;
+            updateFavoritesCount();
+        } else {
+            // User is not logged in
+            showLoginBtn.style.display = 'inline-block';
+            showSignupBtn.style.display = 'inline-block';
+            logoutBtn.style.display = 'none';
+            userGreeting.style.display = 'none';
+            userName.textContent = '';
+            document.getElementById('my-favorites-btn').style.display = 'none';
+        }
+    }
+
+    // Toggle favorite (add/remove)
+    async function toggleFavorite(id, name) {
+        if (!currentUser) {
+            showNotification('Please login to add favorites', 'error');
+            return;
         }
 
-        saveFavorites(favorites);
-        renderPage(currentPage); // Re-render to update heart icons
+        const isFav = isFavorite(id);
+
+        try {
+            if (isFav) {
+                // Remove from favorites
+                const response = await fetch(`/api/favorites/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to remove favorite');
+
+                userFavorites = userFavorites.filter(fId => fId !== id);
+                showNotification(`"${name}" removed from favorites`, 'success');
+            } else {
+                // Add to favorites
+                const response = await fetch('/api/favorites', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ instrument_id: id })
+                });
+
+                if (!response.ok) throw new Error('Failed to add favorite');
+
+                userFavorites.push(id);
+                showNotification(`"${name}" added to favorites ❤️`, 'success');
+            }
+
+            updateFavoritesCount();
+            renderPage(currentPage); // Re-render to update heart icons
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
     }
 
     function isFavorite(id) {
-        const favorites = getFavorites();
-        return favorites.includes(id);
+        return userFavorites.includes(id);
+    }
+
+    // Show favorites modal
+    async function showFavoritesModal() {
+        if (!currentUser) {
+            showNotification('Please login to view favorites', 'error');
+            return;
+        }
+
+        const modal = document.getElementById('favorites-modal');
+        const favoritesList = document.getElementById('favorites-list');
+
+        modal.classList.remove('hidden');
+        favoritesList.innerHTML = '<div class="loading">Loading your favorites...</div>';
+
+        // Load full instrument details for favorites
+        try {
+            const response = await fetch('/api/instruments');
+            if (!response.ok) throw new Error('Failed to load instruments');
+
+            const allInstruments = await response.json();
+            const favoriteInstruments = allInstruments.filter(inst => userFavorites.includes(inst.id));
+
+            if (favoriteInstruments.length === 0) {
+                favoritesList.innerHTML = '<div class="loading">You have no favorite instruments yet. Click the ❤️ button on instruments to add them!</div>';
+                return;
+            }
+
+            favoritesList.innerHTML = '';
+            favoriteInstruments.forEach(inst => {
+                const card = document.createElement('div');
+                card.className = 'instrument-card';
+                const imgSrc = inst.image_url || 'https://via.placeholder.com/400x250/2563eb/ffffff?text=Instrument';
+                const statusClass = inst.status === 'disponible' ? 'status-disponible' : 'status-sold';
+
+                card.innerHTML = `
+                    <img src="${imgSrc}" alt="${inst.nom}" class="card-image">
+                    <div class="card-content">
+                        <div class="card-brand">${inst.marque || 'Brand N/A'}</div>
+                        <h3 class="card-title">${inst.nom}</h3>
+                        <div class="card-type">Type: ${inst.type}</div>
+                        <div class="card-description">${inst.caracteristique || 'No description available.'}</div>
+                        <div class="card-footer">
+                            <span class="card-price">${inst.prix} €</span>
+                            <span class="card-status ${statusClass}">${inst.status}</span>
+                        </div>
+                    </div>
+                `;
+                favoritesList.appendChild(card);
+            });
+        } catch (error) {
+            favoritesList.innerHTML = '<div class="loading">Error loading favorites.</div>';
+            showNotification('Failed to load favorites', 'error');
+        }
     }
 
     // Notification System
@@ -67,6 +212,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const showSignupBtn = document.getElementById('show-signup');
     const switchToSignup = document.getElementById('switch-to-signup');
     const switchToLogin = document.getElementById('switch-to-login');
+
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    currentUser = null;
+                    userFavorites = [];
+                    updateAuthUI();
+                    renderPage(currentPage); // Refresh to hide favorite hearts
+                    showNotification('Logged out successfully', 'success');
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } catch (error) {
+                showNotification('Failed to logout', 'error');
+            }
+        });
+    }
 
     // Forms
     const loginForm = document.getElementById('login-form');
@@ -164,7 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const result = await handleAuth('/login', { email, password });
-            // In a real app, update UI to show user is logged in
+            currentUser = result.user;
+            await loadFavorites();
+            updateFavoritesCount();
+            updateAuthUI();
+            hideModal();
+            showNotification(`Welcome back, ${currentUser.nom}!`, 'success');
+            renderPage(currentPage); // Refresh to show favorites
         } catch (error) {
             showNotification(error.message, 'error');
         }
@@ -180,6 +356,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const editInstrModal = document.getElementById('edit-instr-modal');
     const closeEditModal = document.querySelector('.close-edit-modal');
     const editInstrForm = document.getElementById('edit-instr-form');
+
+    // --- My Favorites Modal Logic ---
+    const favoritesModal = document.getElementById('favorites-modal');
+    const closeFavoritesModal = document.querySelector('.close-favorites-modal');
+    const myFavoritesBtn = document.getElementById('my-favorites-btn');
+
+    if (myFavoritesBtn) {
+        myFavoritesBtn.addEventListener('click', showFavoritesModal);
+    }
+
+    if (closeFavoritesModal) {
+        closeFavoritesModal.addEventListener('click', () => {
+            favoritesModal.classList.add('hidden');
+        });
+    }
 
     function showInstrModal() {
         addInstrModal.classList.remove('hidden');
@@ -207,6 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target === editInstrModal) {
             hideEditModal();
+        }
+        if (e.target === favoritesModal) {
+            favoritesModal.classList.add('hidden');
         }
     });
 
@@ -507,6 +701,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    loadBrands();
-    loadInstruments();
+    // Initialize app
+    checkAuth().then(() => {
+        loadBrands();
+        loadInstruments();
+    });
 });

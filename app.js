@@ -2,10 +2,14 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = 3000;
+
+// JWT Secret - In production, use environment variable
+const JWT_SECRET = 'your-secret-key-change-in-production';
 
 // Database Connection Configuration
 const dbConfig = {
@@ -21,16 +25,10 @@ const dbConfig = {
 // Create Pool
 const pool = mysql.createPool(dbConfig);
 
-// IMPORTANT: JSON parser MUST come before routes
+// IMPORTANT: JSON parser and cookie parser MUST come before routes
 app.use(express.json());
+app.use(cookieParser());
 
-// Session configuration
-app.use(session({
-    secret: 'your-secret-key-here-change-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
-}));
 
 // Test Database Connection
 async function testDbConnection() {
@@ -85,9 +83,22 @@ app.post('/login', async (req, res) => {
         if (!match) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        // Store user in session
-        req.session.userId = user.id;
-        req.session.user = { id: user.id, nom: user.nom, email: user.email };
+
+        // Create JWT token
+        const token = jwt.sign(
+            { userId: user.id, email: user.email },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Set token in HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false, // Set to true in production with HTTPS
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            sameSite: 'strict'
+        });
+
         res.json({ message: 'Login successful', user: { id: user.id, nom: user.nom, email: user.email } });
     } catch (error) {
         console.error(error);
@@ -187,12 +198,22 @@ app.get('/api/brands', async (req, res) => {
     }
 });
 
-// Auth middleware
+// Auth middleware - Verify JWT from cookie
 function requireAuth(req, res, next) {
-    if (!req.session.userId) {
+    const token = req.cookies.token;
+
+    if (!token) {
         return res.status(401).json({ error: 'Please login to continue' });
     }
-    next();
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.userId = decoded.userId;
+        req.userEmail = decoded.email;
+        next();
+    } catch (error) {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+    }
 }
 
 // GET User's Favorites
@@ -201,10 +222,10 @@ app.get('/api/favorites', requireAuth, async (req, res) => {
     try {
         const [rows] = await pool.query(
             'SELECT instrument_id FROM favoris WHERE utilisateur_id = ?',
-            [req.session.userId]
+            [req.userId]
         );
         const favoriteIds = rows.map(row => row.instrument_id);
-        console.log(`>>> User ${req.session.userId} has ${favoriteIds.length} favorites <<<`);
+        console.log(`>>> User ${req.userId} has ${favoriteIds.length} favorites <<<`);
         res.json(favoriteIds);
     } catch (error) {
         console.error('Error fetching favorites:', error);
@@ -224,7 +245,7 @@ app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
         await pool.query(
             'INSERT INTO favoris (utilisateur_id, instrument_id) VALUES (?, ?)',
-            [req.session.userId, instrument_id]
+            [req.userId, instrument_id]
         );
         res.status(201).json({ message: 'Added to favorites' });
     } catch (error) {
@@ -244,7 +265,7 @@ app.delete('/api/favorites/:instrument_id', requireAuth, async (req, res) => {
     try {
         const [result] = await pool.query(
             'DELETE FROM favoris WHERE utilisateur_id = ? AND instrument_id = ?',
-            [req.session.userId, instrument_id]
+            [req.userId, instrument_id]
         );
 
         if (result.affectedRows === 0) {
@@ -259,25 +280,31 @@ app.delete('/api/favorites/:instrument_id', requireAuth, async (req, res) => {
 });
 
 // GET Current User
-app.get('/api/user', (req, res) => {
-    if (req.session.user) {
-        res.json(req.session.user);
-    } else {
-        res.status(401).json({ error: 'Not logged in' });
+app.get('/api/user', requireAuth, async (req, res) => {
+    try {
+        const [users] = await pool.query(
+            'SELECT id, nom, email FROM utilisateurs WHERE id = ?',
+            [req.userId]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(users[0]);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Failed to fetch user' });
     }
 });
 
-// Logout
+// Logout - Clear JWT cookie
 app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to logout' });
-        }
-        res.json({ message: 'Logged out successfully' });
-    });
+    res.clearCookie('token');
+    res.json({ message: 'Logged out successfully' });
 });
 
-console.log('API routes registered successfully');
+console.log('All API routes (including auth) registered successfully');
 
 // ========== STATIC FILES (AFTER API ROUTES, EXCLUDING /api/*) ==========
 // Only serve static files if the path doesn't start with /api
