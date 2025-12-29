@@ -40,13 +40,19 @@
                 <button id="show-add-instr-btn" class="btn-primary">Add Instrument</button>
             </div>
 
-            <!-- Brand Filter -->
+            <!-- Filters -->
             <div class="filter-container">
-                <label for="brand-filter" class="filter-label">Filter by Brand:</label>
-                <select id="brand-filter" class="filter-select">
-                    <option value="">All Brands</option>
-                    <!-- Brands will be loaded here -->
-                </select>
+                <div class="filter-group">
+                    <label for="search-input" class="filter-label">Search:</label>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search instruments...">
+                </div>
+                <div class="filter-group">
+                    <label for="brand-filter" class="filter-label">Filter by Brand:</label>
+                    <select id="brand-filter" class="filter-select">
+                        <option value="">All Brands</option>
+                        <!-- Brands will be loaded here -->
+                    </select>
+                </div>
             </div>
 
             <div id="instruments-grid" class="grid-container">
@@ -143,6 +149,47 @@
                     <input type="text" id="instr-image">
                 </div>
                 <button type="submit" class="btn-primary full-width">Add Instrument</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Instrument Modal -->
+    <div id="edit-instr-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-edit-modal close-modal">&times;</span>
+            <h2>Edit Instrument</h2>
+            <form id="edit-instr-form">
+                <input type="hidden" id="edit-instr-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-instr-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Type (e.g. Guitar, Piano)</label>
+                    <input type="text" id="edit-instr-type" required>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="edit-instr-marque">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="edit-instr-prix">
+                </div>
+                <div class="form-group">
+                    <label>Condition (Etat)</label>
+                    <input type="text" id="edit-instr-etat" placeholder="Neuf, Occasion, Excellent...">
+                </div>
+                <div class="form-group">
+                    <label>Characteristics (Caractéristiques)</label>
+                    <textarea id="edit-instr-caracteristique" rows="3"
+                        placeholder="Détails, spécifications..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="edit-instr-image">
+                </div>
+                <button type="submit" class="btn-primary full-width">Update Instrument</button>
             </form>
         </div>
     </div>

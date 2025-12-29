@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Favorites Management
+    function getFavorites() {
+        const favorites = localStorage.getItem('musicstore-favorites');
+        return favorites ? JSON.parse(favorites) : [];
+    }
+
+    function saveFavorites(favorites) {
+        localStorage.setItem('musicstore-favorites', JSON.stringify(favorites));
+    }
+
+    function toggleFavorite(id, name) {
+        let favorites = getFavorites();
+        const index = favorites.indexOf(id);
+
+        if (index > -1) {
+            // Remove from favorites
+            favorites.splice(index, 1);
+            showNotification(`"${name}" removed from favorites`, 'success');
+        } else {
+            // Add to favorites
+            favorites.push(id);
+            showNotification(`"${name}" added to favorites ❤️`, 'success');
+        }
+
+        saveFavorites(favorites);
+        renderPage(currentPage); // Re-render to update heart icons
+    }
+
+    function isFavorite(id) {
+        const favorites = getFavorites();
+        return favorites.includes(id);
+    }
+
     // Notification System
     function showNotification(message, type = 'success') {
         const container = document.getElementById('notification-container');
@@ -143,6 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInstrModal = document.querySelector('.close-instr-modal');
     const addInstrForm = document.getElementById('add-instr-form');
 
+    // --- Edit Instrument Logic ---
+    const editInstrModal = document.getElementById('edit-instr-modal');
+    const closeEditModal = document.querySelector('.close-edit-modal');
+    const editInstrForm = document.getElementById('edit-instr-form');
+
     function showInstrModal() {
         addInstrModal.classList.remove('hidden');
     }
@@ -167,7 +205,79 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === addInstrModal) {
             hideInstrModal();
         }
+        if (e.target === editInstrModal) {
+            hideEditModal();
+        }
     });
+
+    function showEditModal(instrument) {
+        editInstrModal.classList.remove('hidden');
+        // Populate form with current values
+        document.getElementById('edit-instr-id').value = instrument.id;
+        document.getElementById('edit-instr-nom').value = instrument.nom;
+        document.getElementById('edit-instr-type').value = instrument.type;
+        document.getElementById('edit-instr-marque').value = instrument.marque || '';
+        document.getElementById('edit-instr-prix').value = instrument.prix || '';
+        document.getElementById('edit-instr-etat').value = instrument.etat || '';
+        document.getElementById('edit-instr-caracteristique').value = instrument.caracteristique || '';
+        document.getElementById('edit-instr-image').value = instrument.image_url || '';
+    }
+
+    function hideEditModal() {
+        editInstrModal.classList.add('hidden');
+    }
+
+    if (closeEditModal) {
+        closeEditModal.addEventListener('click', hideEditModal);
+    }
+
+    editInstrForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-instr-id').value;
+        const nom = document.getElementById('edit-instr-nom').value;
+        const type = document.getElementById('edit-instr-type').value;
+        const marque = document.getElementById('edit-instr-marque').value;
+        const prix = document.getElementById('edit-instr-prix').value;
+        const etat = document.getElementById('edit-instr-etat').value;
+        const caracteristique = document.getElementById('edit-instr-caracteristique').value;
+        const image_url = document.getElementById('edit-instr-image').value;
+
+        try {
+            const response = await fetch(`/api/instruments/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nom, type, marque, prix, etat, caracteristique, image_url })
+            });
+
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Failed to update');
+
+            showNotification('Instrument updated successfully!', 'success');
+            hideEditModal();
+            loadInstruments(); // Reload grid
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
+    });
+
+    // Delete Instrument Function
+    async function deleteInstrument(id, name) {
+        try {
+            const response = await fetch(`/api/instruments/${id}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Failed to delete');
+
+            showNotification(`"${name}" deleted successfully!`, 'success');
+            loadInstruments(); // Reload grid
+        } catch (error) {
+            showNotification(error.message, 'error');
+        }
+    }
 
     addInstrForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -200,8 +310,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Brand Filter Logic ---
+    // --- Brand Filter and Search Logic ---
     let selectedBrand = '';
+    let searchTerm = '';
 
     async function loadBrands() {
         try {
@@ -227,6 +338,17 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedBrand = e.target.value;
         currentPage = 1; // Reset to first page
         renderPage(currentPage);
+    });
+
+    // Search input with debouncing
+    let searchTimeout;
+    document.getElementById('search-input').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchTerm = e.target.value.toLowerCase().trim();
+            currentPage = 1; // Reset to first page
+            renderPage(currentPage);
+        }, 300); // 300ms debounce
     });
 
     // Load Instruments with Pagination and Filtering
@@ -261,14 +383,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Filter by brand if selected
+        // Filter by brand and search term
         let filteredInstruments = allInstruments;
+
+        // Apply brand filter
         if (selectedBrand) {
-            filteredInstruments = allInstruments.filter(inst => inst.marque === selectedBrand);
+            filteredInstruments = filteredInstruments.filter(inst => inst.marque === selectedBrand);
+        }
+
+        // Apply search filter
+        if (searchTerm) {
+            filteredInstruments = filteredInstruments.filter(inst => {
+                return (
+                    inst.nom?.toLowerCase().includes(searchTerm) ||
+                    inst.type?.toLowerCase().includes(searchTerm) ||
+                    inst.marque?.toLowerCase().includes(searchTerm) ||
+                    inst.caracteristique?.toLowerCase().includes(searchTerm)
+                );
+            });
         }
 
         if (filteredInstruments.length === 0) {
-            grid.innerHTML = '<div class="loading">No instruments found for this brand.</div>';
+            grid.innerHTML = '<div class="loading">No instruments found matching your criteria.</div>';
             pageInfo.textContent = 'Page 0 of 0';
             prevBtn.disabled = true;
             nextBtn.disabled = true;
@@ -288,8 +424,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const imgSrc = inst.image_url || 'https://via.placeholder.com/400x250/2563eb/ffffff?text=Instrument';
             const statusClass = inst.status === 'disponible' ? 'status-disponible' : 'status-sold';
+            const favoriteClass = isFavorite(inst.id) ? 'favorite-active' : '';
+            const heartIcon = isFavorite(inst.id) ? '❤️' : '🤍';
 
             card.innerHTML = `
+                <div class="card-header">
+                    <button class="favorite-btn ${favoriteClass}" data-id="${inst.id}" data-name="${inst.nom}" title="Add to favorites">
+                        <span class="heart-icon">${heartIcon}</span>
+                    </button>
+                </div>
                 <img src="${imgSrc}" alt="${inst.nom}" class="card-image">
                 <div class="card-content">
                     <div class="card-brand">${inst.marque || 'Brand N/A'}</div>
@@ -300,9 +443,42 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="card-price">${inst.prix} €</span>
                         <span class="card-status ${statusClass}">${inst.status}</span>
                     </div>
+                    <div class="card-actions">
+                        <button class="btn-update" data-id="${inst.id}">Update</button>
+                        <button class="btn-delete" data-id="${inst.id}" data-name="${inst.nom}">Delete</button>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
+        });
+
+        // Add event listeners to favorite buttons
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click if any
+                const id = e.currentTarget.dataset.id;
+                const name = e.currentTarget.dataset.name;
+                toggleFavorite(parseInt(id), name);
+            });
+        });
+
+        // Add event listeners to update and delete buttons
+        document.querySelectorAll('.btn-update').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                const instrument = filteredInstruments.find(inst => inst.id == id);
+                if (instrument) {
+                    showEditModal(instrument);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                const name = e.target.dataset.name;
+                deleteInstrument(id, name);
+            });
         });
 
         // Update pagination controls
