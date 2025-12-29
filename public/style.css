@@ -82,6 +82,42 @@ body {
     color: var(--text-color);
 }
 
+/* Filter Container */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--secondary-bg);
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.filter-select {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background-color: white;
+    cursor: pointer;
+    min-width: 200px;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 /* Grid: exactly 3 columns */
 .grid-container {
     display: grid;

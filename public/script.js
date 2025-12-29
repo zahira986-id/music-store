@@ -116,10 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const result = await handleAuth('/signup', { nom, email, password });
-            alert('Account created successfully! Please sign in.');
+            showNotification('Account created successfully! Please sign in.', 'success');
             showModal('login');
         } catch (error) {
-            alert(error.message);
+            showNotification(error.message, 'error');
         }
     });
 
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await handleAuth('/login', { email, password });
             // In a real app, update UI to show user is logged in
         } catch (error) {
-            alert(error.message);
+            showNotification(error.message, 'error');
         }
     });
 
@@ -200,7 +200,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Load Instruments with Pagination
+    // --- Brand Filter Logic ---
+    let selectedBrand = '';
+
+    async function loadBrands() {
+        try {
+            const response = await fetch('/api/brands');
+            if (!response.ok) throw new Error('Failed to fetch brands');
+
+            const brands = await response.json();
+            const brandFilter = document.getElementById('brand-filter');
+
+            // Add brand options
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading brands:', error);
+        }
+    }
+
+    document.getElementById('brand-filter').addEventListener('change', (e) => {
+        selectedBrand = e.target.value;
+        currentPage = 1; // Reset to first page
+        renderPage(currentPage);
+    });
+
+    // Load Instruments with Pagination and Filtering
     let allInstruments = [];
     let currentPage = 1;
     const itemsPerPage = 6; // 2 rows of 3 cards
@@ -232,11 +261,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Filter by brand if selected
+        let filteredInstruments = allInstruments;
+        if (selectedBrand) {
+            filteredInstruments = allInstruments.filter(inst => inst.marque === selectedBrand);
+        }
+
+        if (filteredInstruments.length === 0) {
+            grid.innerHTML = '<div class="loading">No instruments found for this brand.</div>';
+            pageInfo.textContent = 'Page 0 of 0';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
+        }
+
         // Calculate pagination
-        const totalPages = Math.ceil(allInstruments.length / itemsPerPage);
+        const totalPages = Math.ceil(filteredInstruments.length / itemsPerPage);
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        const pageInstruments = allInstruments.slice(startIndex, endIndex);
+        const pageInstruments = filteredInstruments.slice(startIndex, endIndex);
 
         // Render cards
         pageInstruments.forEach(inst => {
@@ -277,12 +320,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('next-page').addEventListener('click', () => {
-        const totalPages = Math.ceil(allInstruments.length / itemsPerPage);
+        let filteredInstruments = allInstruments;
+        if (selectedBrand) {
+            filteredInstruments = allInstruments.filter(inst => inst.marque === selectedBrand);
+        }
+        const totalPages = Math.ceil(filteredInstruments.length / itemsPerPage);
         if (currentPage < totalPages) {
             currentPage++;
             renderPage(currentPage);
         }
     });
 
+    loadBrands();
     loadInstruments();
 });

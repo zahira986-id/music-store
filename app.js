@@ -115,6 +115,20 @@ app.post('/api/instruments', async (req, res) => {
     }
 });
 
+// GET Unique Brands
+app.get('/api/brands', async (req, res) => {
+    console.log('>>> Request received for /api/brands <<<');
+    try {
+        const [rows] = await pool.query('SELECT DISTINCT marque FROM instrument WHERE marque IS NOT NULL AND marque != "" ORDER BY marque');
+        const brands = rows.map(row => row.marque);
+        console.log(`>>> Found brands: ${brands.join(', ')} <<<`);
+        res.json(brands);
+    } catch (error) {
+        console.error('Error fetching brands:', error);
+        res.status(500).json({ error: 'Failed to fetch brands' });
+    }
+});
+
 console.log('API routes registered successfully');
 
 // ========== STATIC FILES (AFTER API ROUTES, EXCLUDING /api/*) ==========
