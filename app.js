@@ -1,22 +1,25 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
 const PORT = 3000;
 
 // JWT Secret - In production, use environment variable
-const JWT_SECRET = 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Database Connection Configuration
 const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'music',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'music',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -28,6 +31,50 @@ const pool = mysql.createPool(dbConfig);
 // IMPORTANT: JSON parser and cookie parser MUST come before routes
 app.use(express.json());
 app.use(cookieParser());
+app.use(passport.initialize());
+
+// Google OAuth Strategy
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/auth/google/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // Check if user exists with this Google ID
+        let [users] = await pool.query('SELECT * FROM utilisateurs WHERE google_id = ?', [profile.id]);
+
+        if (users.length > 0) {
+            // User exists, return user
+            return done(null, users[0]);
+        }
+
+        // Check if user exists with this email
+        [users] = await pool.query('SELECT * FROM utilisateurs WHERE email = ?', [profile.emails[0].value]);
+
+        if (users.length > 0) {
+            // Link Google account to existing user
+            await pool.query('UPDATE utilisateurs SET google_id = ? WHERE id = ?', [profile.id, users[0].id]);
+            return done(null, users[0]);
+        }
+
+        // Create new user
+        const [result] = await pool.query(
+            'INSERT INTO utilisateurs (nom, email, google_id, role, date_inscription) VALUES (?, ?, ?, ?, NOW())',
+            [profile.displayName, profile.emails[0].value, profile.id, 'user']
+        );
+
+        const newUser = {
+            id: result.insertId,
+            nom: profile.displayName,
+            email: profile.emails[0].value,
+            google_id: profile.id
+        };
+
+        return done(null, newUser);
+    } catch (error) {
+        return done(error, null);
+    }
+}));
 
 
 // Test Database Connection
@@ -105,6 +152,36 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Server error during login' });
     }
 });
+
+// Google OAuth Routes
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'], session: false })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: '/' }),
+    (req, res) => {
+        // Create JWT token
+        const token = jwt.sign(
+            { userId: req.user.id, email: req.user.email },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+
+
+        // Set token in HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: 'strict'
+        });
+
+        // Redirect to home page
+        res.redirect('/');
+    }
+);
 
 // GET Instruments
 app.get('/api/instruments', async (req, res) => {
