@@ -9,7 +9,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // JWT Secret - In production, use environment variable
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -37,7 +37,7 @@ app.use(passport.initialize());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/auth/google/callback'
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         // Check if user exists with this Google ID
@@ -141,9 +141,9 @@ app.post('/login', async (req, res) => {
         // Set token in HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false, // Set to true in production with HTTPS
+            secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
-            sameSite: 'strict'
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'strict'
         });
 
         res.json({ message: 'Login successful', user: { id: user.id, nom: user.nom, email: user.email } });
@@ -173,9 +173,9 @@ app.get('/auth/google/callback',
         // Set token in HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000,
-            sameSite: 'strict'
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'strict'
         });
 
         // Redirect to home page
