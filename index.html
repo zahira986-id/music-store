@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicStore</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="brand">MusicStore</a>
+            <div class="nav-links">
+                <a href="#">home</a>
+                <a href="#">about</a>
+                <a href="#">contact</a>
+                <button id="my-favorites-btn" class="btn-secondary" style="display: none;">
+                    ❤️ My Favorites (<span id="favorites-count">0</span>)
+                </button>
+                <span id="user-greeting" style="display: none; color: var(--text-color); font-weight: 500;">
+                    Hello, <span id="user-name"></span>!
+                </span>
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
+                <button id="show-login" class="btn-secondary">sign in</button>
+                <button id="show-signup" class="btn-primary">connection</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- <div class="hero">
+            <h1>Find Your Rhythm</h1>
+            <p>Discover the best instruments and equipment for your musical journey.</p>
+        </div>-->
+
+        <section id="instruments-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 class="section-title" style="margin-bottom: 0;">Find Your Rhythm</h2>
+                <button id="show-add-instr-btn" class="btn-primary" style="display: none;">Add Instrument</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="search-input" class="filter-label">Search:</label>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search instruments...">
+                </div>
+                <div class="filter-group">
+                    <label for="brand-filter" class="filter-label">Filter by Brand:</label>
+                    <select id="brand-filter" class="filter-select">
+                        <option value="">All Brands</option>
+                        <!-- Brands will be loaded here -->
+                    </select>
+                </div>
+            </div>
+
+            <div id="instruments-grid" class="grid-container">
+                Instruments will be loaded here
+                <div class="loading">Loading instruments...</div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="pagination-controls" class="pagination">
+                <button id="prev-page" class="btn-secondary" disabled>← Previous</button>
+                <span id="page-info" class="page-info">Page 1 of 1</span>
+                <button id="next-page" class="btn-secondary" disabled>Next →</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modals -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+
+            <!-- Login Form -->
+            <div id="login-form-container">
+                <h2>Sign In</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Sign In</button>
+                </form>
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+                <a href="/auth/google" class="btn-google full-width">
+                    <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <path fill="#4285F4"
+                            d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+                        <path fill="#34A853"
+                            d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+                        <path fill="#FBBC05"
+                            d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z" />
+                        <path fill="#EA4335"
+                            d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
+                    </svg>
+                    Sign in with Google
+                </a>
+                <p class="switch-auth">New here? <a href="#" id="switch-to-signup">Create an account</a></p>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form-container" class="hidden">
+                <h2>Create Account</h2>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-nom">Name</label>
+                        <input type="text" id="signup-nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Sign Up</button>
+                </form>
+                <p class="switch-auth">Already have an account? <a href="#" id="switch-to-login">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Instrument Modal -->
+    <div id="add-instr-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-instr-modal close-modal">&times;</span>
+            <h2>Add Instrument</h2>
+            <form id="add-instr-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="instr-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Type (e.g. Guitar, Piano)</label>
+                    <input type="text" id="instr-type" required>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="instr-marque">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="instr-prix">
+                </div>
+                <div class="form-group">
+                    <label>Condition (Etat)</label>
+                    <input type="text" id="instr-etat" placeholder="Neuf, Occasion, Excellent...">
+                </div>
+                <div class="form-group">
+                    <label>Characteristics (Caractéristiques)</label>
+                    <textarea id="instr-caracteristique" rows="3" placeholder="Détails, spécifications..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="instr-image">
+                </div>
+                <button type="submit" class="btn-primary full-width">Add Instrument</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Instrument Modal -->
+    <div id="edit-instr-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-edit-modal close-modal">&times;</span>
+            <h2>Edit Instrument</h2>
+            <form id="edit-instr-form">
+                <input type="hidden" id="edit-instr-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-instr-nom" required>
+                </div>
+                <div class="form-group">
+                    <label>Type (e.g. Guitar, Piano)</label>
+                    <input type="text" id="edit-instr-type" required>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="edit-instr-marque">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="edit-instr-prix">
+                </div>
+                <div class="form-group">
+                    <label>Condition (Etat)</label>
+                    <input type="text" id="edit-instr-etat" placeholder="Neuf, Occasion, Excellent...">
+                </div>
+                <div class="form-group">
+                    <label>Characteristics (Caractéristiques)</label>
+                    <textarea id="edit-instr-caracteristique" rows="3"
+                        placeholder="Détails, spécifications..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="edit-instr-image">
+                </div>
+                <button type="submit" class="btn-primary full-width">Update Instrument</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- My Favorites Modal -->
+    <div id="favorites-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close-favorites-modal close-modal">&times;</span>
+            <h2>❤️ My Favorite Instruments</h2>
+            <div id="favorites-list" class="grid-container">
+                <div class="loading">Loading your favorites...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
