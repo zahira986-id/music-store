@@ -1,25 +1,28 @@
 {
-    "version": 2,
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/index.js"
+            "destination": "/api"
         },
         {
             "source": "/auth/(.*)",
-            "destination": "/api/index.js"
+            "destination": "/api"
         },
         {
             "source": "/login",
-            "destination": "/api/index.js"
+            "destination": "/api"
         },
         {
             "source": "/signup",
-            "destination": "/api/index.js"
+            "destination": "/api"
         },
         {
             "source": "/logout",
-            "destination": "/api/index.js"
+            "destination": "/api"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
