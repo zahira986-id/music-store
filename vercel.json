@@ -28,7 +28,7 @@
             "destination": "/app.js"
         },
         {
-            "source": "/((?!api|auth|login|signup|logout).*)$",
+            "source": "/(.*)",
             "destination": "/public/$1"
         }
     ]

@@ -373,7 +373,8 @@ app.post('/logout', (req, res) => {
 console.log('All API routes (including auth) registered successfully');
 
 // ========== STATIC FILES (AFTER API ROUTES) ==========
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve files from the public folder
+app.use(express.static(path.join(process.cwd(), 'public')));
 console.log('Static middleware registered');
 
 // ========== ERROR HANDLERS (LAST) ==========
@@ -387,11 +388,14 @@ app.use((err, req, res, next) => {
 // 404 Handler (Must be absolute last)
 app.use((req, res) => {
     console.log(`404: ${req.method} ${req.path}`);
-    if (req.accepts('json')) {
-        res.status(404).json({ error: 'Not found' });
-    } else {
-        res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+
+    // If it's an API request, return JSON
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'API route not found' });
     }
+
+    // For all other requests, serve the index.html (SPA fallback)
+    res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
 });
 
 // Start Server
