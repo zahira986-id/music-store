@@ -1,40 +1,29 @@
 {
     "version": 2,
-    "builds": [
+    "rewrites": [
         {
-            "src": "api/index.js",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/index.js"
+            "source": "/api/(.*)",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/auth/(.*)",
-            "dest": "/api/index.js"
+            "source": "/auth/(.*)",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/login",
-            "dest": "/api/index.js"
+            "source": "/login",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/signup",
-            "dest": "/api/index.js"
+            "source": "/signup",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/logout",
-            "dest": "/api/index.js"
+            "source": "/logout",
+            "destination": "/api/index.js"
         },
         {
-            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|html))$",
-            "dest": "/public/$1",
-            "check": true
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/public/index.html"
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
