@@ -6,10 +6,30 @@
             "use": "@vercel/node"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(.*)",
-            "dest": "app.js"
+            "source": "/api/(.*)",
+            "destination": "/app.js"
+        },
+        {
+            "source": "/auth/(.*)",
+            "destination": "/app.js"
+        },
+        {
+            "source": "/login",
+            "destination": "/app.js"
+        },
+        {
+            "source": "/signup",
+            "destination": "/app.js"
+        },
+        {
+            "source": "/logout",
+            "destination": "/app.js"
+        },
+        {
+            "source": "/((?!api|auth|login|signup|logout).*)$",
+            "destination": "/public/$1"
         }
     ]
 }
