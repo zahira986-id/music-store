@@ -20,10 +20,6 @@
         {
             "source": "/logout",
             "destination": "/api/index.js"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
         }
     ]
 }
