@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
@@ -14,19 +14,14 @@ const PORT = process.env.PORT || 3000;
 // JWT Secret - In production, use environment variable
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Database Connection Configuration
-const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'music',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-};
-
-// Create Pool
-const pool = mysql.createPool(dbConfig);
+// Database Connection Configuration (PostgreSQL)
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || ''}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'postgres'}`,
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+});
 
 // IMPORTANT: JSON parser and cookie parser MUST come before routes
 app.use(express.json());
@@ -41,7 +36,8 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         // Check if user exists with this Google ID
-        let [users] = await pool.query('SELECT * FROM utilisateurs WHERE google_id = ?', [profile.id]);
+        let result = await pool.query('SELECT * FROM utilisateurs WHERE google_id = $1', [profile.id]);
+        let users = result.rows;
 
         if (users.length > 0) {
             // User exists, return user
@@ -49,27 +45,22 @@ passport.use(new GoogleStrategy({
         }
 
         // Check if user exists with this email
-        [users] = await pool.query('SELECT * FROM utilisateurs WHERE email = ?', [profile.emails[0].value]);
+        result = await pool.query('SELECT * FROM utilisateurs WHERE email = $1', [profile.emails[0].value]);
+        users = result.rows;
 
         if (users.length > 0) {
             // Link Google account to existing user
-            await pool.query('UPDATE utilisateurs SET google_id = ? WHERE id = ?', [profile.id, users[0].id]);
+            await pool.query('UPDATE utilisateurs SET google_id = $1 WHERE id = $2', [profile.id, users[0].id]);
             return done(null, users[0]);
         }
 
         // Create new user
-        const [result] = await pool.query(
-            'INSERT INTO utilisateurs (nom, email, google_id, role, date_inscription) VALUES (?, ?, ?, ?, NOW())',
+        result = await pool.query(
+            'INSERT INTO utilisateurs (nom, email, google_id, role, date_inscription) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
             [profile.displayName, profile.emails[0].value, profile.id, 'user']
         );
 
-        const newUser = {
-            id: result.insertId,
-            nom: profile.displayName,
-            email: profile.emails[0].value,
-            google_id: profile.id
-        };
-
+        const newUser = result.rows[0];
         return done(null, newUser);
     } catch (error) {
         return done(error, null);
@@ -80,8 +71,8 @@ passport.use(new GoogleStrategy({
 // Test Database Connection
 async function testDbConnection() {
     try {
-        const [rows] = await pool.query('SELECT 1');
-        console.log('Connected to MySQL database "music" successfully!');
+        const result = await pool.query('SELECT 1');
+        console.log('Connected to PostgreSQL database (Supabase) successfully!');
     } catch (error) {
         console.error('Error connecting to the database:', error.message);
     }
@@ -100,12 +91,12 @@ app.post('/signup', async (req, res) => {
         return res.status(400).json({ error: 'All fields are required' });
     }
     try {
-        const [existingUsers] = await pool.query('SELECT * FROM utilisateurs WHERE email = ?', [email]);
-        if (existingUsers.length > 0) {
+        const result = await pool.query('SELECT * FROM utilisateurs WHERE email = $1', [email]);
+        if (result.rows.length > 0) {
             return res.status(400).json({ error: 'User already exists' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query('INSERT INTO utilisateurs (nom, email, mot_de_passe, role, date_inscription) VALUES (?, ?, ?, ?, NOW())',
+        await pool.query('INSERT INTO utilisateurs (nom, email, mot_de_passe, role, date_inscription) VALUES ($1, $2, $3, $4, NOW())',
             [nom, email, hashedPassword, 'user']);
         res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
@@ -121,11 +112,11 @@ app.post('/login', async (req, res) => {
         return res.status(400).json({ error: 'All fields are required' });
     }
     try {
-        const [users] = await pool.query('SELECT * FROM utilisateurs WHERE email = ?', [email]);
-        if (users.length === 0) {
+        const result = await pool.query('SELECT * FROM utilisateurs WHERE email = $1', [email]);
+        if (result.rows.length === 0) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const user = users[0];
+        const user = result.rows[0];
         const match = await bcrypt.compare(password, user.mot_de_passe);
         if (!match) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -168,8 +159,6 @@ app.get('/auth/google/callback',
             { expiresIn: '24h' }
         );
 
-
-
         // Set token in HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true,
@@ -187,9 +176,9 @@ app.get('/auth/google/callback',
 app.get('/api/instruments', async (req, res) => {
     console.log('>>> GET /api/instruments called <<<');
     try {
-        const [rows] = await pool.query('SELECT * FROM instrument');
-        console.log(`>>> Returning ${rows.length} instruments <<<`);
-        res.json(rows);
+        const result = await pool.query('SELECT * FROM instrument');
+        console.log(`>>> Returning ${result.rows.length} instruments <<<`);
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching instruments:', error);
         res.status(500).json({ error: 'Failed to fetch instruments' });
@@ -204,11 +193,11 @@ app.post('/api/instruments', async (req, res) => {
         return res.status(400).json({ error: 'Name and Type are required' });
     }
     try {
-        const [result] = await pool.query(
-            'INSERT INTO instrument (nom, type, marque, prix, etat, caracteristique, image_url, status, date_ajout) VALUES (?, ?, ?, ?, ?, ?, ?, "disponible", NOW())',
-            [nom, type, marque, prix, etat, caracteristique, image_url]
+        const result = await pool.query(
+            'INSERT INTO instrument (nom, type, marque, prix, etat, caracteristique, image_url, status, date_ajout) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW()) RETURNING id',
+            [nom, type, marque, prix, etat, caracteristique, image_url, 'disponible']
         );
-        res.status(201).json({ message: 'Instrument added successfully', id: result.insertId });
+        res.status(201).json({ message: 'Instrument added successfully', id: result.rows[0].id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to add instrument' });
@@ -226,12 +215,12 @@ app.put('/api/instruments/:id', async (req, res) => {
     }
 
     try {
-        const [result] = await pool.query(
-            'UPDATE instrument SET nom = ?, type = ?, marque = ?, prix = ?, etat = ?, caracteristique = ?, image_url = ? WHERE id = ?',
+        const result = await pool.query(
+            'UPDATE instrument SET nom = $1, type = $2, marque = $3, prix = $4, etat = $5, caracteristique = $6, image_url = $7 WHERE id = $8',
             [nom, type, marque, prix, etat, caracteristique, image_url, id]
         );
 
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Instrument not found' });
         }
 
@@ -248,9 +237,9 @@ app.delete('/api/instruments/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [result] = await pool.query('DELETE FROM instrument WHERE id = ?', [id]);
+        const result = await pool.query('DELETE FROM instrument WHERE id = $1', [id]);
 
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Instrument not found' });
         }
 
@@ -265,8 +254,8 @@ app.delete('/api/instruments/:id', async (req, res) => {
 app.get('/api/brands', async (req, res) => {
     console.log('>>> Request received for /api/brands <<<');
     try {
-        const [rows] = await pool.query('SELECT DISTINCT marque FROM instrument WHERE marque IS NOT NULL AND marque != "" ORDER BY marque');
-        const brands = rows.map(row => row.marque);
+        const result = await pool.query('SELECT DISTINCT marque FROM instrument WHERE marque IS NOT NULL AND marque != \'\' ORDER BY marque');
+        const brands = result.rows.map(row => row.marque);
         console.log(`>>> Found brands: ${brands.join(', ')} <<<`);
         res.json(brands);
     } catch (error) {
@@ -297,11 +286,11 @@ function requireAuth(req, res, next) {
 app.get('/api/favorites', requireAuth, async (req, res) => {
     console.log('>>> GET /api/favorites called <<<');
     try {
-        const [rows] = await pool.query(
-            'SELECT instrument_id FROM favoris WHERE utilisateur_id = ?',
+        const result = await pool.query(
+            'SELECT instrument_id FROM favoris WHERE utilisateur_id = $1',
             [req.userId]
         );
-        const favoriteIds = rows.map(row => row.instrument_id);
+        const favoriteIds = result.rows.map(row => row.instrument_id);
         console.log(`>>> User ${req.userId} has ${favoriteIds.length} favorites <<<`);
         res.json(favoriteIds);
     } catch (error) {
@@ -321,12 +310,12 @@ app.post('/api/favorites', requireAuth, async (req, res) => {
 
     try {
         await pool.query(
-            'INSERT INTO favoris (utilisateur_id, instrument_id) VALUES (?, ?)',
+            'INSERT INTO favoris (utilisateur_id, instrument_id) VALUES ($1, $2)',
             [req.userId, instrument_id]
         );
         res.status(201).json({ message: 'Added to favorites' });
     } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
+        if (error.code === '23505') { // PostgreSQL unique constraint violation
             return res.status(400).json({ error: 'Already in favorites' });
         }
         console.error('Error adding favorite:', error);
@@ -340,12 +329,12 @@ app.delete('/api/favorites/:instrument_id', requireAuth, async (req, res) => {
     const { instrument_id } = req.params;
 
     try {
-        const [result] = await pool.query(
-            'DELETE FROM favoris WHERE utilisateur_id = ? AND instrument_id = ?',
+        const result = await pool.query(
+            'DELETE FROM favoris WHERE utilisateur_id = $1 AND instrument_id = $2',
             [req.userId, instrument_id]
         );
 
-        if (result.affectedRows === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Favorite not found' });
         }
 
@@ -359,16 +348,16 @@ app.delete('/api/favorites/:instrument_id', requireAuth, async (req, res) => {
 // GET Current User
 app.get('/api/user', requireAuth, async (req, res) => {
     try {
-        const [users] = await pool.query(
-            'SELECT id, nom, email FROM utilisateurs WHERE id = ?',
+        const result = await pool.query(
+            'SELECT id, nom, email FROM utilisateurs WHERE id = $1',
             [req.userId]
         );
 
-        if (users.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        res.json(users[0]);
+        res.json(result.rows[0]);
     } catch (error) {
         console.error('Error fetching user:', error);
         res.status(500).json({ error: 'Failed to fetch user' });
@@ -383,15 +372,8 @@ app.post('/logout', (req, res) => {
 
 console.log('All API routes (including auth) registered successfully');
 
-// ========== STATIC FILES (AFTER API ROUTES, EXCLUDING /api/*) ==========
-// Only serve static files if the path doesn't start with /api
-app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-        console.log(`Skipping static for API route: ${req.path}`);
-        return next();
-    }
-    express.static(path.join(__dirname, 'public'))(req, res, next);
-});
+// ========== STATIC FILES (AFTER API ROUTES) ==========
+app.use(express.static(path.join(__dirname, 'public')));
 console.log('Static middleware registered');
 
 // ========== ERROR HANDLERS (LAST) ==========
