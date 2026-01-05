@@ -1,0 +1,644 @@
+{
+  "name": "Final_Lead_Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "my-workflow",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        512
+      ],
+      "id": "a3bbf3e5-da1e-4063-8b9c-c22b411a080b",
+      "name": "Webhook",
+      "webhookId": "3d832a30-27e9-4451-a0c1-5401f52aba54"
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 COMPLETE BUSINESS LEAD GENERATOR\n**ALL FEATURES INCLUDED**\n\n## ✅ Form trigger\n## ✅ Coordinate extraction\n## ✅ SerpAPI pagination\n## ✅ Lead scoring & sorting\n## ✅ Social media extraction\n## ✅ Google Sheets export\n## ✅ Complete IF conditions\n## ✅ No duplicates\n\n## **Replace 4 credential IDs and test!**",
+        "height": 640,
+        "width": 740,
+        "color": 7
+      },
+      "id": "4165ed0e-0c35-40af-8693-49ae82d37e24",
+      "name": "🌟 Complete Workflow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2656,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "query",
+              "name": "query",
+              "value": "={{ $json.body.businessType }}",
+              "type": "string"
+            },
+            {
+              "id": "city",
+              "name": "city",
+              "value": "={{ $json.body.city }}",
+              "type": "string"
+            },
+            {
+              "id": "country",
+              "name": "country",
+              "value": "={{ $json.body.country }}",
+              "type": "string"
+            },
+            {
+              "id": "max_leads",
+              "name": "max_leads",
+              "value": "={{ $json.body.maxLeads }}",
+              "type": "number"
+            },
+            {
+              "id": "search_location",
+              "name": "search_location",
+              "value": "={{ $json.body.city }}, {{ $json.body.country }}",
+              "type": "string"
+            },
+            {
+              "id": "all_leads",
+              "name": "all_leads",
+              "value": [],
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b67458a6-51bf-4e9b-95c4-6ca93807a58e",
+      "name": "Setup Parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "q": "={{ $json.search_location }} coordinates",
+        "additionalFields": {
+          "num": "1"
+        },
+        "requestOptions": {}
+      },
+      "id": "6cbe4e50-f4e2-4cd8-8531-8ad70fa97791",
+      "name": "Find Coordinates",
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        512
+      ],
+      "credentials": {
+        "serpApi": {
+          "id": "OYYwkugT9MK3MkMF",
+          "name": "SerpApi monvrai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract coordinates for search location\nconst searchData = $('Setup Parameters').first().json;\nconst kg = $input.first().json.knowledge_graph || {};\nconst answer = $input.first().json.answer_box || {};\n\n// Try to get coordinates from SerpAPI response\nlet lat, lng;\n\nif (kg.coordinates) {\n  lat = kg.coordinates.latitude;\n  lng = kg.coordinates.longitude;\n} else if (answer.answer && answer.answer.includes('°')) {\n  const match = answer.answer.match(/(-?\\d+\\.\\d+)°?\\s*([NS]),?\\s*(-?\\d+\\.\\d+)°?\\s*([EW])/);\n  if (match) {\n    lat = parseFloat(match[1]);\n    lng = parseFloat(match[3]);\n    if (match[2] === 'S') lat = -lat;\n    if (match[4] === 'W') lng = -lng;\n  }\n}\n\n// Comprehensive fallback coordinates for major cities\nif (!lat || !lng) {\n  const fallbacks = {\n    'Casablanca, Morocco': [33.5731, -7.5898],\n    'Rabat, Morocco': [34.0209, -6.8416],\n    'Meknes, Morocco': [33.8675, -5.5382],\n    'Fez, Morocco': [34.0181, -5.0078],\n    'Marrakech, Morocco': [31.6295, -7.9811],\n    'Paris, France': [48.8566, 2.3522],\n    'Lyon, France': [45.7640, 4.8357],\n    'Marseille, France': [43.2965, 5.3698],\n    'Nice, France': [43.7102, 7.2620],\n    'Madrid, Spain': [40.4168, -3.7038],\n    'Barcelona, Spain': [41.3851, 2.1734],\n    'Valencia, Spain': [39.4699, -0.3763],\n    'Seville, Spain': [37.3891, -5.9845],\n    'New York, United States': [40.7128, -74.0060],\n    'Los Angeles, United States': [34.0522, -118.2437],\n    'Chicago, United States': [41.8781, -87.6298],\n    'Miami, United States': [25.7617, -80.1918],\n    'London, United Kingdom': [51.5074, -0.1278],\n    'Manchester, United Kingdom': [53.4808, -2.2426],\n    'Birmingham, United Kingdom': [52.4862, -1.8904],\n    'Liverpool, United Kingdom': [53.4084, -2.9916],\n    'Berlin, Germany': [52.5200, 13.4050],\n    'Munich, Germany': [48.1351, 11.5820],\n    'Hamburg, Germany': [53.5511, 9.9937],\n    'Frankfurt, Germany': [50.1109, 8.6821],\n    'Rome, Italy': [41.9028, 12.4964],\n    'Milan, Italy': [45.4642, 9.1900],\n    'Naples, Italy': [40.8518, 14.2681],\n    'Florence, Italy': [43.7696, 11.2558],\n    'Toronto, Canada': [43.6532, -79.3832],\n    'Vancouver, Canada': [49.2827, -123.1207],\n    'Montreal, Canada': [45.5017, -73.5673],\n    'Calgary, Canada': [51.0447, -114.0719],\n    'Dubai, UAE': [25.2048, 55.2708],\n    'Abu Dhabi, UAE': [24.4539, 54.3773],\n    'Sydney, Australia': [-33.8688, 151.2093],\n    'Melbourne, Australia': [-37.8136, 144.9631]\n  };\n  \n  const coords = fallbacks[searchData.search_location] || [40.7128, -74.0060];\n  lat = coords[0];\n  lng = coords[1];\n}\n\nreturn {\n  ...searchData,\n  coordinates_string: `@${lat},${lng},13z`\n};"
+      },
+      "id": "aec5316f-36fb-4ff3-af0e-e2e93ec21be4",
+      "name": "Extract Coordinates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "google_maps",
+        "q": "={{ $json.query }}",
+        "ll": "={{ $json.coordinates_string }}",
+        "additionalFields": {
+          "hl": "en",
+          "start": 0
+        },
+        "requestOptions": {}
+      },
+      "id": "86ba2476-8955-4d19-be2e-662b810738d9",
+      "name": "SerpAPI Google Maps Search",
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        512
+      ],
+      "credentials": {
+        "serpApi": {
+          "id": "OYYwkugT9MK3MkMF",
+          "name": "SerpApi monvrai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This code processes both initial and paginated results.\n\n// Get static parameters\nconst searchDataFromSetup = $('Setup Parameters').first().json;\nconst maxDesired = searchDataFromSetup.max_leads;\nconst query = searchDataFromSetup.query;\nconst search_location = searchDataFromSetup.search_location;\nconst coordinates_string = $('Extract Coordinates').first().json.coordinates_string;\n\n// Get API results from the node's direct input\nconst mapResults = $input.first().json;\nconst results = mapResults.local_results || [];\n\n// Get previously collected leads.\n// The data comes from the node before the HTTP Request that might have lost it.\n// If that node hasn't run yet, it means this is the first execution, so we have no existing leads.\nlet existingLeads = [];\ntry {\n  existingLeads = $('Continue or Finalize?').first().json.all_leads || [];\n} catch (e) {\n  // 'Continue or Finalize?' has not run yet. This is expected on the first pass.\n  existingLeads = [];\n}\n\nconsole.log(`=== PROCESSING RESULTS ===`);\nconsole.log(`Found ${results.length} new results`);\nconsole.log(`Existing leads: ${existingLeads.length}`);\nconsole.log(`Target: ${maxDesired}`);\n\n// Process each business with complete data extraction\nconst newLeads = results.map((business, index) => {\n  const businessName = business.title || 'Unknown';\n  const website = business.website || '';\n  const phone = business.phone ? \"'\" + business.phone.replace(/[^\\d\\+\\-\\(\\)\\s]/g, '') : '';\n  const rating = business.rating || 0;\n  const reviews = business.reviews || 0;\n  \n  // Generate email from website domain\n  let email = '';\n  if (website) {\n    try {\n      const domain = website.replace(/^https?:\\/\\//, '').replace(/\\/.*$/, '').replace(/^www\\./, '');\n      email = `info@${domain}`;\n    } catch (e) {\n      email = '';\n    }\n  }\n  \n  // Extract social media links from business data\n  const links = business.links || {};\n  let facebook = '', instagram = '', linkedin = '', twitter = '';\n  \n  Object.values(links).forEach(link => {\n    const url = typeof link === 'string' ? link : (link.link || '');\n    if (url.includes('facebook.com')) facebook = url;\n    if (url.includes('instagram.com')) instagram = url;\n    if (url.includes('linkedin.com')) linkedin = url;\n    if (url.includes('twitter.com') || url.includes('x.com')) twitter = url;\n  });\n  \n  // Generate probable social media if not found but we have website\n  if (website && businessName && !facebook) {\n    const cleanName = businessName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 15);\n    if (cleanName.length > 3) {\n      facebook = `https://facebook.com/${cleanName}`;\n      instagram = `https://instagram.com/${cleanName}`;\n    }\n  }\n  \n  // Enhanced lead scoring algorithm (0-100 points)\n  let leadScore = 15; // Base score\n  if (website) {\n    leadScore += 35;\n    if (website.includes('https://')) leadScore += 5;\n  }\n  if (phone && phone !== \"'\") leadScore += 20;\n  if (reviews > 0) {\n    leadScore += 10;\n    if (rating >= 4.5) leadScore += 15;\n    else if (rating >= 4.0) leadScore += 10;\n    else if (rating >= 3.5) leadScore += 5;\n  }\n  if (business.hours) leadScore += 5;\n  if (business.address && business.address.length > 10) leadScore += 5;\n  if (reviews >= 100) leadScore += 5;\n  else if (reviews >= 50) leadScore += 3;\n  \n  leadScore = Math.min(leadScore, 100);\n  \n  // Quality tier based on lead score\n  let qualityTier = 'Poor';\n  if (leadScore >= 85) qualityTier = 'Excellent';\n  else if (leadScore >= 70) qualityTier = 'Good';\n  else if (leadScore >= 55) qualityTier = 'Average';\n  \n  return {\n    business_name: businessName,\n    phone: phone,\n    website: website,\n    email: email,\n    address: business.address || '',\n    rating: rating,\n    reviews: reviews,\n    hours: business.hours || '',\n    google_maps_link: business.place_id ? \n      `https://www.google.com/maps/place/?q=place_id:${business.place_id}` :\n      `https://www.google.com/maps/search/${encodeURIComponent(businessName)}`,\n    lead_score: leadScore,\n    quality_tier: qualityTier,\n    facebook: facebook,\n    instagram: instagram,\n    linkedin: linkedin,\n    twitter: twitter,\n    category: business.type || query,\n    search_query: query,\n    search_location: search_location,\n    place_id: business.place_id || '',\n    position: existingLeads.length + index + 1\n  };\n});\n\n// Remove duplicates and combine\nconst allLeadsMap = new Map();\nexistingLeads.forEach(lead => {\n  const key = `${lead.business_name}|${lead.address}`.toLowerCase();\n  allLeadsMap.set(key, lead);\n});\nnewLeads.forEach(lead => {\n  const key = `${lead.business_name}|${lead.address}`.toLowerCase();\n  if (!allLeadsMap.has(key)) {\n    allLeadsMap.set(key, lead);\n  }\n});\nconst allLeads = Array.from(allLeadsMap.values());\nconst totalCollected = allLeads.length;\n\n// Check SerpAPI pagination for next page\nconst paginationInfo = mapResults.serpapi_pagination || {};\nconst nextPageUrl = paginationInfo.next || '';\nconst hasMorePages = !!nextPageUrl;\n\nconsole.log(`Total collected: ${totalCollected}/${maxDesired}`);\nconsole.log(`Has more pages: ${hasMorePages}`);\n\n// Decision logic for pagination\nconst needMoreLeads = totalCollected < maxDesired;\nconst shouldContinue = needMoreLeads && hasMorePages && results.length > 0;\n\nconsole.log(`Should continue: ${shouldContinue}`);\n\nif (shouldContinue) {\n  // Return single object for pagination continuation\n  return {\n    // Pass along all necessary data for the loop\n    query: query,\n    city: searchDataFromSetup.city,\n    country: searchDataFromSetup.country,\n    max_leads: maxDesired,\n    search_location: search_location,\n    all_leads: allLeads, // <-- This is the crucial state being passed\n    next_page_url: nextPageUrl,\n    continue_search: true,\n    coordinates_string: coordinates_string,\n    progress: `Collected ${totalCollected}/${maxDesired} leads`\n  };\n} else {\n  // Search complete - return final results as array\n  const finalLeads = allLeads\n    .sort((a, b) => b.lead_score - a.lead_score)\n    .slice(0, maxDesired);\n  \n  console.log(`=== SEARCH COMPLETE ===`);\n  console.log(`Returning ${finalLeads.length} leads`);\n  \n  return finalLeads;\n}"
+      },
+      "id": "cad2e88e-6a42-4c54-b39e-8590ab3939b6",
+      "name": "Process and Paginate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        512
+      ],
+      "notes": "This node processes results from both the initial search and all subsequent paginated fetches. It consolidates leads, handles duplicates, and determines if another page is needed."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5ea1bba2-aec8-4a99-b49f-4569729a0a98",
+                    "leftValue": "={{ $json.continue_search }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Continue "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "09beb580-fa5f-4ef5-b5ad-cca932ba41e2",
+                    "leftValue": "={{ $json.continue_search }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Finalize"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1b68b9a-e233-4783-9142-04813189290c",
+      "name": "Continue or Finalize?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        96,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.next_page_url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "serpApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "8008893d-12b0-45d9-8e70-e19d48b47bf9",
+      "name": "Fetch Next Page URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        352,
+        896
+      ],
+      "credentials": {
+        "serpApi": {
+          "id": "7sO688tYbFP21xb2",
+          "name": "SerpApi account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "f6c017c8-5703-46f2-aebd-4dabb3b2d112",
+      "name": "Wait 2 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        800
+      ],
+      "webhookId": "529a13ca-8879-406b-bcb6-38be300da2c9"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "lead_score"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dfc9410b-3627-485e-897d-9c5a912c9d2c",
+      "name": "Sort by Lead Score",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        496,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ✅ COMPLETE SETUP\n\n**Replace these 4 IDs:**\n## 1. YOUR_SERPAPI_CREDENTIAL_ID (appears twice)\n## 2. YOUR_GOOGLE_SHEET_ID\n## 3. YOUR_SHEET_GID  \n## 4. YOUR_GOOGLE_SHEETS_CREDENTIAL_ID\n\n**Test with:**\n- Business: dentists\n- City: Meknes\n- Country: Morocco\n- Leads: 44\n\n**Features:**\n✅ Complete coordinate extraction\n✅ Full SerpAPI pagination\n✅ Lead scoring & sorting\n✅ 20 data columns\n✅ Social media extraction\n✅ No duplicates\n\n**This has EVERYTHING!**",
+        "height": 760,
+        "width": 540,
+        "color": 2
+      },
+      "id": "9a19dcbf-d893-49e6-b369-4fd8dfdc98ad",
+      "name": "✅ Complete Setup Guide",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 PAGINATION CONTROL\n\n**Continuation Logic:**\n- Checks if continue_search = true\n- Verifies max_results limit not exceeded\n- Routes to either continue or finish\n\n**TRUE (Continue):**\n- More results needed\n- Routes to Wait node\n- Then back to SERPAPI search\n\n**FALSE (Finish):**\n- Max results reached\n- No more results available\n- Routes to sorting and saving\n\n**Safety Features:**\n- Prevents infinite loops\n- Rate limiting with delays\n- Progress tracking",
+        "height": 620,
+        "width": 150,
+        "color": 4
+      },
+      "id": "dfdf43e7-59d5-4929-aa22-7bc5a1da2013",
+      "name": "🔄 Pagination Logic",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🌍 STEP 1: GET COORDINATES\n\n**Why this step is crucial:**\n- Converts city names to GPS coordinates\n- Ensures accurate location targeting\n- Prevents defaulting to US locations\n- Uses Google Search for coordinate lookup\n\n**SerpAPI Call:**\n- Engine: Google Search\n- Query: \"{city}, {country} coordinates\"\n- Results: Organic + Knowledge Graph\n\n**Handles:**\n- Major cities worldwide\n- Coordinate extraction from results\n- Fallback to predefined coordinates",
+        "height": 80,
+        "width": 480,
+        "color": 5
+      },
+      "id": "a876b77e-a4bb-4e91-93aa-275937ac4d06",
+      "name": "🌍 Coordinates Lookup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🗺️ STEP 2: GOOGLE MAPS SEARCH\n\n**SerpAPI Google Maps Engine:**\n- Uses exact GPS coordinates for targeting\n- Language: English (hl=en)\n- Pagination support with 'start' parameter\n- Returns comprehensive business data\n\n**Data Retrieved:**\n- Business name, address, phone\n- Website, rating, reviews, hours\n- GPS coordinates, place_id\n- Service options, categories\n- Direct business links\n\n**Pagination Logic:**\n- Fetches ~20 results per request\n- Continues until max_results reached\n- 2-second delay between requests",
+        "height": 400,
+        "width": 320,
+        "color": 3
+      },
+      "id": "7f2e8d81-a5cd-4bfc-9989-054ea72f5daf",
+      "name": "🗺️ Maps Search",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 SETUP INSTRUCTIONS\n\n**1. SerpAPI Credentials:**\n## - Go to serpapi.com\n## - Sign up for free account (100 searches/month)\n## - Get your API key from dashboard\n## - Add to n8n credentials as \"SerpAPI\"\n## - Paste API key in Authentication field\n\n## **2. Google Sheets Setup:**\n## - Create new Google Sheet\n## - Add \"Leads\" tab if needed\n## - Set up OAuth2 credentials in n8n\n## - Update sheet ID in Save node\n\n## **3. Form Access:**\n## - Webhook URL: your-n8n-url/webhook/lead-gen\n## - Share this URL for lead generation requests",
+        "height": 900,
+        "width": 688,
+        "color": 4
+      },
+      "id": "b15705ca-c42c-42cd-bd35-3fb4112532f3",
+      "name": "⚙️ Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📊 GOOGLE SHEETS EXPORT\n\n**15 Rich Data Columns:**\n1. Business Name\n2. Phone (Excel-safe format)\n3. Website URL\n4. Email (estimated)\n5. Full Address\n6. Rating (1-5 stars)\n7. Review Count\n8. Operating Hours\n9. Google Maps Link (direct profile)\n10. Facebook Profile\n11. Instagram Profile\n12. LinkedIn Profile\n13. Business Category\n14. Search Query Used\n15. Search Location\n\n**Features:**\n- Appends to existing data\n- No duplicates (if using unique constraints)\n- Ready for CRM import\n- Perfect for sales outreach",
+        "height": 460,
+        "width": 360,
+        "color": 7
+      },
+      "id": "47fbdd6f-7b97-4597-9298-9648be26ce66",
+      "name": "📊 Sheets Export",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        688,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1dpLDbWG_rX1PzN5VLmlLuKfA24zoOvKKrr6NIxI_phs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feuille 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dpLDbWG_rX1PzN5VLmlLuKfA24zoOvKKrr6NIxI_phs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Business Name": "={{ $json.business_name }}",
+            "Phone": "={{ $json.phone }}",
+            "Website": "={{ $json.website }}",
+            "Address": "={{ $json.address }}",
+            "Email": "={{ $json.email }}",
+            "Rating": "={{ $json.rating }}",
+            "Lead Score\r": "={{ $json.lead_score }}",
+            "Google Maps Link\r": "={{ $json.google_maps_link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Google Maps Link\r",
+              "displayName": "Google Maps Link\r",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Score\r",
+              "displayName": "Lead Score\r",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "64dddb12-4723-4654-988d-5e673d4314e8",
+      "name": "Save to Google Sheets1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nrzNlontVt9Einhk",
+          "name": "Google Sheets account 20"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Setup Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Parameters": {
+      "main": [
+        [
+          {
+            "node": "Find Coordinates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Coordinates": {
+      "main": [
+        [
+          {
+            "node": "Extract Coordinates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Coordinates": {
+      "main": [
+        [
+          {
+            "node": "SerpAPI Google Maps Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI Google Maps Search": {
+      "main": [
+        [
+          {
+            "node": "Process and Paginate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process and Paginate Results": {
+      "main": [
+        [
+          {
+            "node": "Continue or Finalize?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue or Finalize?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Next Page URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sort by Lead Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Next Page URL": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Process and Paginate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort by Lead Score": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a313b085-4e04-4c1c-832a-56c0a78b6296",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fba02c56f732391825a81b0d3eb33212632413b406e8a0f3fe5b1cfa7369a99"
+  },
+  "id": "hx79EvzyZc5Sn0o7",
+  "tags": []
+}

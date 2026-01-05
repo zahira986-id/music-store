@@ -7,8 +7,10 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const Groq = require('groq-sdk');
 
 const app = express();
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const PORT = process.env.PORT || 3000;
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -106,6 +108,41 @@ app.get('/auth/google/callback',
         res.redirect('/');
     }
 );
+
+app.post('/api/chat', async (req, res) => {
+    const { message } = req.body;
+    try {
+        // Fetch inventory context
+        const inventory = await pool.query('SELECT nom, type, marque, prix, status FROM instrument WHERE status = \'disponible\' LIMIT 20');
+        const inventoryText = inventory.rows.map(i => `- ${i.nom} (${i.type} ${i.marque}): ${i.prix}€`).join('\n');
+
+        const systemPrompt = `You are a helpful and enthusiastic assistant for "MusicStore", a premium instrument shop in Morocco.
+        
+        Current Inventory:
+        ${inventoryText}
+        
+        Rules:
+        - Only recommend instruments from the inventory above.
+        - If asked about something not in stock, suggest checking back later or contact support.
+        - Be concise, friendly, and use emojis.
+        - Prices are in Euros (€).
+        
+        User Query: ${message}`;
+
+        const completion = await groq.chat.completions.create({
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: message }
+            ],
+            model: (process.env.GROQ_MODEL || 'llama-3.3-70b-versatile').trim().replace(/\.$/, ''),
+        });
+
+        res.json({ response: completion.choices[0]?.message?.content || "I'm humming a tune... try again?" });
+    } catch (error) {
+        console.error('Groq API Error:', error);
+        res.status(500).json({ error: 'Failed to chat' });
+    }
+});
 
 app.get('/api/instruments', async (req, res) => {
     try {
