@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const messagesContainer = document.getElementById('chat-messages');
 
-    // Toggle Chat Window
-    toggleBtn.addEventListener('click', () => {
+    const headerCloseBtn = document.getElementById('chat-header-close');
+
+    function toggleChat() {
         chatWindow.classList.toggle('hidden');
         chatIcon.classList.toggle('hidden');
         closeIcon.classList.toggle('hidden');
@@ -21,7 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!chatWindow.classList.contains('hidden')) {
             chatInput.focus();
         }
-    });
+    }
+
+    // Toggle Chat Window
+    toggleBtn.addEventListener('click', toggleChat);
+
+    // Header Close Button
+    if (headerCloseBtn) {
+        headerCloseBtn.addEventListener('click', toggleChat);
+    }
 
     // Handle Message Submission
     chatInputForm.addEventListener('submit', (e) => {
