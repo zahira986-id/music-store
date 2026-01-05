@@ -20,6 +20,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Navigation Elements
+    const showHomeBtn = document.getElementById('show-home');
+    const showScraperBtn = document.getElementById('show-scraper');
+    const showContactBtn = document.getElementById('show-contact');
+
+    const heroSection = document.getElementById('hero-section');
+    const instrumentsSection = document.getElementById('instruments-section');
+    const scraperSection = document.getElementById('scraper-section');
+    const contactSection = document.getElementById('contact-section');
+
+    // Navigation Logic
+    function setActiveSection(sectionName) {
+        // Toggle visibility directly
+        if (heroSection) heroSection.classList.toggle('hidden', sectionName !== 'home');
+        if (instrumentsSection) instrumentsSection.classList.toggle('hidden', sectionName !== 'home');
+        if (scraperSection) scraperSection.classList.toggle('hidden', sectionName !== 'scraper');
+        if (contactSection) contactSection.classList.toggle('hidden', sectionName !== 'contact');
+
+        // Reset nav links
+        document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '#4b5563');
+
+        // Highlight active link
+        if (sectionName === 'home' && showHomeBtn) showHomeBtn.style.color = 'var(--primary-color)';
+        if (sectionName === 'scraper' && showScraperBtn) showScraperBtn.style.color = 'var(--primary-color)';
+        if (sectionName === 'contact' && showContactBtn) showContactBtn.style.color = 'var(--primary-color)';
+    }
+
+    if (showHomeBtn) showHomeBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); });
+
+    if (showScraperBtn) showScraperBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            showNotification('Please login to use the Scraper tools', 'error');
+            showModal('login');
+            return;
+        }
+        setActiveSection('scraper');
+    });
+
+    if (showContactBtn) showContactBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('contact'); });
+
+    // Allow scraper.js to just handle scraping, we handle nav here.
+    // Ensure we start at home
+    setActiveSection('home');
+
     // Load favorites from database
     async function loadFavorites() {
         if (!currentUser) return;

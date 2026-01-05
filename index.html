@@ -19,9 +19,10 @@
         <div class="container">
             <a href="#" class="brand">MusicStore</a>
             <div class="nav-links">
-                <a href="#">home</a>
-                <a href="#">about</a>
-                <a href="#">contact</a>
+                <a href="#" id="show-home">home</a>
+                <a href="#" id="show-scraper">scraper</a>
+                <a href="#" id="show-about">about</a>
+                <a href="#" id="show-contact">contact</a>
                 <button id="my-favorites-btn" class="btn-secondary" style="display: none;">
                     ❤️ My Favorites (<span id="favorites-count">0</span>)
                 </button>
@@ -36,14 +37,11 @@
     </nav>
 
     <main>
-        <!-- <div class="hero">
-            <h1>Find Your Rhythm</h1>
-            <p>Discover the best instruments and equipment for your musical journey.</p>
-        </div>-->
+
 
         <section id="instruments-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h2 class="section-title" style="margin-bottom: 0;">Find Your Rhythm</h2>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 class="section-title" style="margin-bottom: 1rem;">Find Your Rhythm</h2>
                 <button id="show-add-instr-btn" class="btn-primary" style="display: none;">Add Instrument</button>
             </div>
 
@@ -72,6 +70,88 @@
                 <button id="prev-page" class="btn-secondary" disabled>← Previous</button>
                 <span id="page-info" class="page-info">Page 1 of 1</span>
                 <button id="next-page" class="btn-secondary" disabled>Next →</button>
+            </div>
+        </section>
+
+        <!-- Scraper Section -->
+        <section id="scraper-section" class="hidden">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 class="section-title" style="margin-bottom: 0;">Music Store Scraper</h2>
+            </div>
+
+            <div class="scraper-card">
+                <div class="form-group">
+                    <label for="n8n-webhook-url">n8n Webhook URL</label>
+                    <input type="text" id="n8n-webhook-url" placeholder="https://your-n8n-instance.com/webhook/..."
+                        class="search-input">
+                </div>
+
+                <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Lead Generation Parameters</h3>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="business-type">Business Type</label>
+                        <input type="text" id="business-type" placeholder="e.g. Music Stores, Dentists..."
+                            class="search-input" value="Music Stores">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" placeholder="e.g. Casablanca" class="search-input"
+                            value="Casablanca">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" placeholder="e.g. Morocco" class="search-input" value="Morocco">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-leads">Max Leads</label>
+                        <input type="number" id="max-leads" placeholder="20" class="search-input" value="20" min="1"
+                            max="100">
+                    </div>
+                </div>
+
+                <button id="start-scrape-btn" class="btn-primary full-width" style="margin-top: 2rem;">Start
+                    Scraping</button>
+            </div>
+
+            <div id="scrape-status" class="scrape-status hidden">
+                <p id="scrape-status-message">Scraping process started...</p>
+                <div class="progress-bar">
+                    <div id="scrape-progress" class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="hidden">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 class="section-title" style="margin-bottom: 0;">Contact Us</h2>
+                <p style="color: #6b7280; margin-top: 0.5rem;">We'd love to hear from you!</p>
+            </div>
+
+            <div class="contact-card">
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Name</label>
+                        <input type="text" id="contact-name" placeholder="Your name" class="search-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" placeholder="Your email" class="search-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-subject">Subject</label>
+                        <input type="text" id="contact-subject" placeholder="What is this about?" class="search-input"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" rows="5" placeholder="Write your message here..."
+                            style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-family: inherit;"
+                            required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary full-width" style="margin-top: 1.5rem;">Send
+                        Message</button>
+                </form>
             </div>
         </section>
     </main>
@@ -228,7 +308,36 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MusicStore</h3>
+                    <p>Your one-stop shop for the best musical instruments.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#">Home</a>
+                    <a href="#">About</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <p>Email: contact@musicstore.com</p>
+                    <p>Phone: +212 600 000 000</p>
+                    <p>Address: Casablanca, Morocco</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MusicStore. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="script.js"></script>
+    <script src="scraper.js"></script>
 </body>
 
 </html>
