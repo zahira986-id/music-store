@@ -336,8 +336,35 @@
         </div>
     </footer>
 
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget">
+        <!-- Floating Toggle Button -->
+        <button id="chatbot-toggle-btn">
+            <span class="chat-icon">💬</span>
+            <span class="close-icon hidden">✕</span>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="chatbot-window" class="hidden">
+            <div class="chat-header">
+                <h3>MusicStore Assistant</h3>
+                <span class="online-indicator"></span>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot-message">
+                    Hello! 👋 How can I help you find your perfect instrument today?
+                </div>
+            </div>
+            <form id="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off">
+                <button type="submit">➤</button>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script src="scraper.js"></script>
+    <script src="chatbot.js"></script>
 </body>
 
 </html>
