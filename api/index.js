@@ -35,11 +35,11 @@ app.use((req, res, next) => {
 
 // Explicitly serve index.html for the root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Serve static files from the root directory
-app.use(express.static(process.cwd()));
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
