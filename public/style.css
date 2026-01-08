@@ -1,16 +1,16 @@
 :root {
-    --bg-color: #f8f9fa;
-    --text-color: #1a1a1a;
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --secondary-bg: #ffffff;
-    --border-color: #e5e7eb;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --bg-color: oklch(28.2% 0.091 267.935);
+    --text-color: #f1f5f9;
+    --primary-color: #60a5fa;
+    --primary-hover: #93c5fd;
+    --secondary-bg: oklch(35% 0.091 267.935);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
@@ -24,20 +24,6 @@ body {
     padding: 0 0.5rem;
 }
 
-/* Navbar */
-
-
-
-
-
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-}
-
-/* Instruments Section */
 #instruments-section {
     padding: 2rem 1.5rem;
     max-width: 1400px;
@@ -51,71 +37,7 @@ body {
     color: var(--text-color);
 }
 
-/* Filter Container */
-.filter-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    padding: 1rem 1.5rem;
-    background: var(--secondary-bg);
-    border-radius: 0.75rem;
-    border: 1px solid var(--border-color);
-    flex-wrap: wrap;
-}
 
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.filter-label {
-    font-weight: 600;
-    color: var(--text-color);
-    font-size: 0.95rem;
-    white-space: nowrap;
-}
-
-.filter-select {
-    padding: 0.6rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    font-size: 0.95rem;
-    font-family: inherit;
-    background-color: white;
-    cursor: pointer;
-    min-width: 200px;
-    transition: border-color 0.2s;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.search-input {
-    padding: 0.6rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    font-size: 0.95rem;
-    font-family: inherit;
-    background-color: white;
-    min-width: 300px;
-    transition: border-color 0.2s;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.search-input::placeholder {
-    color: #9ca3af;
-}
 
 /* Grid: exactly 3 columns */
 .grid-container {
@@ -139,7 +61,7 @@ body {
 
 .instrument-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 24px -4px rgb(0 0 0 / 0.15);
+    box-shadow: 0 12px 24px -4px rgb(0 0 0 / 0.6);
 }
 
 .card-header {
@@ -157,9 +79,9 @@ body {
 }
 
 .favorite-btn {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -241,13 +163,13 @@ body {
 
 .card-type {
     font-size: 0.95rem;
-    color: #6b7280;
+    color: #94a3b8;
     font-weight: 500;
 }
 
 .card-description {
     font-size: 0.95rem;
-    color: #4b5563;
+    color: #cbd5e1;
     line-height: 1.6;
     flex-grow: 1;
 }
@@ -352,7 +274,12 @@ body {
 }
 
 .btn-secondary:hover {
-    background-color: #f3f4f6;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.page-info {
+    color: #94a3b8;
+    font-weight: 500;
 }
 
 .btn-primary {
@@ -447,7 +374,7 @@ body {
     margin-bottom: 0.5rem;
     font-weight: 500;
     font-size: 0.9rem;
-    color: #374151;
+    color: #cbd5e1;
 }
 
 .form-group input {
@@ -561,10 +488,12 @@ body {
 }
 
 .notification {
-    background: white;
+    background: var(--secondary-bg);
+    color: var(--text-color);
     padding: 1rem 1.5rem;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -1303,10 +1232,13 @@ body {
 .message {
     max-width: 85%;
     padding: 0.7rem 0.9rem;
-    border-radius: 1.25rem;
+    border-radius: 12px;
     font-size: 0.875rem;
     line-height: 1.4;
     word-wrap: break-word;
+    transition: all 0.2s ease;
+    background: var(--bg-color);
+    color: var(--text-color);
     animation: messageSlideIn 0.3s ease-out forwards;
     opacity: 0;
     transform: translateY(10px);

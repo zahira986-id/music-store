@@ -9,9 +9,11 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script>
-        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog && window.posthog.__loaded) || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "init ts ns yi rs os Qr es capture Hi calculateEventProperties hs register register_once register_for_session unregister unregister_for_session fs getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty vs us createPersonProfile cs Yr ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing ls debug O ds getPageViewId captureTraceFeedback captureTraceMetric Vr".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog && window.posthog.__loaded) || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "init ts ns yi rs os Qr es capture Hi calculateEventProperties hs register register_once register_for_session unregister unregister_for_session fs getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty vs us createPersonProfile cs Yr ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing ls debug O ds getPageViewId captureTraceFeedback captureTraceMetric Vr".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
         posthog.init('phc_pbTu0SljwXI3Aa0goHK5WFezVO4bS2JjFrajG5eXpsH', {
             api_host: 'https://us.i.posthog.com',
             person_profiles: 'identified_only',
@@ -24,65 +26,171 @@
     <div id="notification-container"></div>
 
     <nav
-        class="navbar border-b-2 border-blue-900 shadow-[0_4px_20px_-5px_rgba(30,58,138,0.3)] sticky top-0 z-[1000] bg-white/80 backdrop-blur-xl py-4">
-        <div class="container mx-auto px-6 grid grid-cols-3 items-center">
-            <!-- Left: Logo -->
+        class="navbar sticky top-0 z-[1000] bg-blue-950/40 backdrop-blur-md border-b border-white/10 shadow-lg transition-all duration-300">
+        <div class="container mx-auto px-6 py-2 grid grid-cols-3 items-center">
+            <!-- Column 1: Brand/Logo -->
             <div class="flex justify-start">
-                <a href="#" class="flex items-center gap-3 text-2xl italic font-bold tracking-tight no-underline">
-                    <img src="img/logo.png" alt="MusicStore Logo" class="h-10 w-auto">
-                    <span class="text-blue-900">MusicStore</span>
+                <a href="#" class="brand-logo flex items-center gap-3 no-underline group"
+                    onclick="setActiveSection('home'); return false;">
+                    <div
+                        class="bg-blue-900 p-1.5 rounded-lg transform group-hover:rotate-6 transition-transform duration-300">
+                        <img src="img/logo.png" alt="MusicStore Logo" class="h-8 w-auto">
+                    </div>
+                    <span
+                        class="text-2xl drop-shadow-[0_0_15px_rgba(147,197,253,0.3)] italic tracking-tighter text-white">MusicStore</span>
                 </a>
             </div>
 
-            <!-- Center: Nav Links -->
-            <div class="flex justify-center gap-8">
+            <!-- Column 2: Navigation Links (Centered) -->
+            <div class="flex justify-center flex-wrap gap-x-8 gap-y-2">
                 <a href="#" id="show-home"
-                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Home</a>
-                <a href="#" id="show-scraper"
-                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Scraper</a>
+                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Home</a>
                 <a href="#" id="show-about"
-                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">About</a>
+                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">About</a>
+                <a href="#" id="show-scraper"
+                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Scraper</a>
                 <a href="#" id="show-contact"
-                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Contact</a>
+                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Contact</a>
             </div>
 
-            <!-- Right: Auth Buttons -->
-            <div class="flex justify-end items-center gap-4">
-                <button id="my-favorites-btn" class="btn-secondary" style="display: none;">
-                    ❤️ My Favorites (<span id="favorites-count">0</span>)
+            <!-- Column 3: User Auth / Actions -->
+            <div class="flex justify-end items-center gap-6">
+                <button id="my-favorites-btn"
+                    class="text-gray-300 hover:text-red-400 transition-colors flex items-center gap-2 font-bold text-xs uppercase tracking-wider no-underline"
+                    style="display: none;">
+                    <span class="text-base">❤️</span> <span class="hidden lg:inline">Favorites</span> (<span
+                        id="favorites-count">0</span>)
                 </button>
-                <span id="user-greeting" style="display: none; color: var(--text-color); font-weight: 500;">
-                    Hello, <span id="user-name"></span>!
-                </span>
-                <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
-                <button id="show-login" class="btn-secondary">sign in</button>
-                <button id="show-signup"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">connection</button>
+
+                <div id="user-greeting"
+                    class="hidden items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                    <span class="text-xs font-black text-blue-100 uppercase tracking-tight">Hi, <span
+                            id="user-name"></span></span>
+                </div>
+
+                <button id="logout-btn"
+                    class="text-xs font-black text-gray-400 hover:text-red-400 transition-colors uppercase tracking-widest no-underline"
+                    style="display: none;">Logout</button>
+
+                <div class="auth-group flex items-center gap-6">
+                    <button id="show-login"
+                        class="text-sm font-semibold text-white hover:opacity-70 transition-opacity no-underline whitespace-nowrap">Sign
+                        In</button>
+                    <button id="show-signup"
+                        class="bg-blue-600 hover:bg-white hover:text-blue-900 text-white text-xs font-bold py-2.5 px-6 rounded-full shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all tracking-wide">Connection</button>
+                </div>
             </div>
         </div>
     </nav>
 
     <main>
-
-
-        <section id="instruments-section">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h2 class="section-title" style="margin-bottom: 1rem;">Find Your Rhythm</h2>
-                <button id="show-add-instr-btn" class="btn-primary" style="display: none;">Add Instrument</button>
+        <!-- Hero Section -->
+        <section id="hero-section" class="relative min-h-[100vh] flex items-center overflow-hidden">
+            <!-- Background Image with Overlay -->
+            <div class="absolute inset-0 z-0">
+                <img src="img/hero-bg.png" alt="Music Store Background" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-blue-950/60 backdrop-brightness-50"></div>
+                <!-- Subtle Radial Glow -->
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent">
+                </div>
             </div>
 
-            <!-- Filters -->
-            <div class="filter-container">
-                <div class="filter-group">
-                    <label for="search-input" class="filter-label">Search:</label>
-                    <input type="text" id="search-input" class="search-input" placeholder="Search instruments...">
+            <div class="container mx-auto px-6 relative z-10 text-center">
+                <div
+                    class="max-w-xl mx-auto bg-white/5 backdrop-blur-xl p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl transform transition-all duration-700 hover:scale-[1.01]">
+                    <h1 class="text-4xl md:text-6xl font-medium text-white leading-tight mb-6 tracking-tight"
+                        style="font-family: 'Cormorant Garamond', serif;">
+                        L'Art de <br>
+                        <span
+                            class="text-blue-300 italic drop-shadow-[0_0_15px_rgba(147,197,253,0.3)]">l'Harmonie.</span>
+                    </h1>
+                    <p
+                        class="text-base md:text-lg text-blue-100/70 mb-10 leading-relaxed font-light max-w-lg mx-auto italic">
+                        Une sélection confidentielle d'instruments de maître, pour ceux qui cherchent la pureté absolue
+                        du son.
+                    </p>
+                    <div class="flex flex-wrap gap-5 justify-center">
+                        <button
+                            onclick="document.getElementById('instruments-section').scrollIntoView({behavior: 'smooth'})"
+                            class="bg-blue-600 hover:bg-white hover:text-blue-900 text-white font-bold py-4 px-10 rounded-full shadow-2xl shadow-blue-600/30 transition-all hover:-translate-y-1 active:scale-95 uppercase tracking-[0.2em] text-[10px]">
+                            La Collection
+                        </button>
+                        <button onclick="setActiveSection('about')"
+                            class="bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md font-bold py-4 px-10 rounded-full transition-all hover:border-white/30 uppercase tracking-[0.2em] text-[10px]">
+                            Savoir-faire
+                        </button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label for="brand-filter" class="filter-label">Filter by Brand:</label>
-                    <select id="brand-filter" class="filter-select">
-                        <option value="">All Brands</option>
-                        <!-- Brands will be loaded here -->
-                    </select>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+                <div class="w-1 h-12 rounded-full bg-gradient-to-b from-blue-400 to-transparent"></div>
+            </div>
+        </section>
+
+        <section id="instruments-section" class="py-24">
+            <div class="max-w-4xl mx-auto text-center mb-16 relative">
+                <div class="inline-block px-4 py-1.5 mb-6 rounded-full bg-blue-500/10 border border-blue-500/20">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-blue-400">La Collection</span>
+                </div>
+                <h2 class="text-4xl md:text-6xl font-medium text-white mb-6 tracking-tight"
+                    style="font-family: 'Cormorant Garamond', serif;">
+                    Trouvez votre <span class="italic text-blue-300">Signature.</span>
+                </h2>
+                <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent mx-auto mb-8">
+                </div>
+
+                <button id="show-add-instr-btn"
+                    class="group relative inline-flex items-center gap-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.02)]"
+                    style="display: none;">
+                    <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                    <span class="text-2xl font-bold italic tracking-[0.2em]">Ajouter un Instrument</span>
+                </button>
+            </div>
+
+            <!-- Premium Filter Bar -->
+            <div class="max-w-5xl mx-auto mb-16 px-4">
+                <div
+                    class="bg-white/5 backdrop-blur-2xl border border-white/10 p-4 md:p-6 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-6">
+                    <!-- Search Input Wrapper -->
+                    <div class="relative flex-grow w-full group">
+                        <div
+                            class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="search-input"
+                            class="w-full bg-blue-950/20 border border-white/10 text-white pl-14 pr-6 py-4 rounded-[1.8rem] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium placeholder:text-gray-500"
+                            placeholder="Find your perfect instrument...">
+                    </div>
+
+                    <!-- Brand Filter Wrapper -->
+                    <div class="relative w-full md:w-80 group">
+                        <div
+                            class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                </path>
+                            </svg>
+                        </div>
+                        <select id="brand-filter"
+                            class="w-full bg-blue-950/20 border border-white/10 text-white pl-14 pr-10 py-4 rounded-[1.8rem] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-bold appearance-none cursor-pointer tracking-wide">
+                            <option value="" class="bg-blue-950 text-white">All Brands</option>
+                            <!-- Brands will be loaded here -->
+                        </select>
+                        <div class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -96,6 +204,80 @@
                 <button id="prev-page" class="btn-secondary" disabled>← Previous</button>
                 <span id="page-info" class="page-info">Page 1 of 1</span>
                 <button id="next-page" class="btn-secondary" disabled>Next →</button>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="hidden py-20 bg-blue-950/20">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6 italic tracking-tight">Our
+                            Passion for Music</h2>
+                        <p class="text-xl text-blue-100 leading-relaxed">
+                            Since 2020, MusicStore has been more than just a shop. We are a sanctuary for musicians, a
+                            place where every instrument tells a story and every artist finds their voice.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+                        <div
+                            class="rounded-2xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300 ring-1 ring-white/10">
+                            <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&q=80&w=800"
+                                alt="Music Studio" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-blue-300 mb-4">Our Mission</h3>
+                            <p class="text-blue-100/80 mb-6 leading-relaxed">
+                                To provide the world with the finest musical equipment while fostering a community of
+                                creativity. We believe that music has the power to bridge cultures and inspire change.
+                            </p>
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3">
+                                    <div class="bg-blue-900/40 p-2 rounded-full">
+                                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-blue-100 font-medium">Uncompromising Quality Control</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <div class="bg-blue-900/40 p-2 rounded-full">
+                                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-blue-100 font-medium">Expert Technical Support</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <div class="bg-blue-900/40 p-2 rounded-full">
+                                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-blue-100 font-medium">Global Artist Community</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-900 rounded-3xl p-12 text-center text-white shadow-xl">
+                        <h3 class="text-3xl font-bold mb-4 italic">Visit Us Today</h3>
+                        <p class="text-blue-100 text-lg mb-8">
+                            Experience the rhythm in person. Our flagship store is open 7 days a week.
+                        </p>
+                        <button id="back-to-home"
+                            class="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-lg">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 

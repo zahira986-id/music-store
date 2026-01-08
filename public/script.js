@@ -23,11 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigation Elements
     const showHomeBtn = document.getElementById('show-home');
     const showScraperBtn = document.getElementById('show-scraper');
+    const showAboutBtn = document.getElementById('show-about');
     const showContactBtn = document.getElementById('show-contact');
 
     const heroSection = document.getElementById('hero-section');
     const instrumentsSection = document.getElementById('instruments-section');
     const scraperSection = document.getElementById('scraper-section');
+    const aboutSection = document.getElementById('about-section');
     const contactSection = document.getElementById('contact-section');
 
     // Navigation Logic
@@ -35,22 +37,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.posthog) {
             posthog.capture('view_section', { section: sectionName });
         }
+
         // Toggle visibility directly
         if (heroSection) heroSection.classList.toggle('hidden', sectionName !== 'home');
         if (instrumentsSection) instrumentsSection.classList.toggle('hidden', sectionName !== 'home');
         if (scraperSection) scraperSection.classList.toggle('hidden', sectionName !== 'scraper');
+        if (aboutSection) aboutSection.classList.toggle('hidden', sectionName !== 'about');
         if (contactSection) contactSection.classList.toggle('hidden', sectionName !== 'contact');
 
-        // Reset nav links
-        document.querySelectorAll('.nav-links a').forEach(a => a.style.color = '#4b5563');
+        // Reset all nav items
+        document.querySelectorAll('.nav-item').forEach(a => {
+            a.classList.remove('text-white', '!text-white');
+            a.classList.add('text-gray-400');
+        });
 
         // Highlight active link
-        if (sectionName === 'home' && showHomeBtn) showHomeBtn.style.color = 'var(--primary-color)';
-        if (sectionName === 'scraper' && showScraperBtn) showScraperBtn.style.color = 'var(--primary-color)';
-        if (sectionName === 'contact' && showContactBtn) showContactBtn.style.color = 'var(--primary-color)';
+        const activeBtnMap = {
+            'home': showHomeBtn,
+            'scraper': showScraperBtn,
+            'about': showAboutBtn,
+            'contact': showContactBtn
+        };
+
+        const activeBtn = activeBtnMap[sectionName];
+        if (activeBtn) {
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('!text-white');
+        }
     }
 
     if (showHomeBtn) showHomeBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); });
+
+    // Brand Logo click
+    const brandLogo = document.querySelector('.brand-logo');
+    if (brandLogo) brandLogo.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); });
+
+    if (showAboutBtn) showAboutBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('about'); });
+    const backToHome = document.getElementById('back-to-home');
+    if (backToHome) backToHome.addEventListener('click', () => setActiveSection('home'));
 
     if (showScraperBtn) showScraperBtn.addEventListener('click', (e) => {
         e.preventDefault();
