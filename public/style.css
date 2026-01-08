@@ -21,51 +21,20 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 0.5rem;
 }
 
 /* Navbar */
-.navbar {
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: 1rem 0;
-}
 
-.navbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
-.brand {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    text-decoration: none;
-    letter-spacing: -0.025em;
-}
+
+
+
 
 .nav-links {
     display: flex;
     gap: 2rem;
     align-items: center;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: #4b5563;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-    text-transform: capitalize;
-}
-
-.nav-links a:hover {
-    color: var(--primary-color);
 }
 
 /* Instruments Section */

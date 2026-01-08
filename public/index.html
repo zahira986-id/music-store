@@ -5,24 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicStore</title>
+    <link rel="stylesheet" href="tailwind.css">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog && window.posthog.__loaded) || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.crossOrigin = "anonymous", p.async = !0, p.src = s.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "init ts ns yi rs os Qr es capture Hi calculateEventProperties hs register register_once register_for_session unregister unregister_for_session fs getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty vs us createPersonProfile cs Yr ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing ls debug O ds getPageViewId captureTraceFeedback captureTraceMetric Vr".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+        posthog.init('phc_pbTu0SljwXI3Aa0goHK5WFezVO4bS2JjFrajG5eXpsH', {
+            api_host: 'https://us.i.posthog.com',
+            person_profiles: 'identified_only',
+        })
+    </script>
 </head>
 
 <body>
     <!-- Notification Container -->
     <div id="notification-container"></div>
 
-    <nav class="navbar">
-        <div class="container">
-            <a href="#" class="brand">MusicStore</a>
-            <div class="nav-links">
-                <a href="#" id="show-home">home</a>
-                <a href="#" id="show-scraper">scraper</a>
-                <a href="#" id="show-about">about</a>
-                <a href="#" id="show-contact">contact</a>
+    <nav
+        class="navbar border-b-2 border-blue-900 shadow-[0_4px_20px_-5px_rgba(30,58,138,0.3)] sticky top-0 z-[1000] bg-white/80 backdrop-blur-xl py-4">
+        <div class="container mx-auto px-6 grid grid-cols-3 items-center">
+            <!-- Left: Logo -->
+            <div class="flex justify-start">
+                <a href="#" class="flex items-center gap-3 text-2xl italic font-bold tracking-tight no-underline">
+                    <img src="img/logo.png" alt="MusicStore Logo" class="h-10 w-auto">
+                    <span class="text-blue-900">MusicStore</span>
+                </a>
+            </div>
+
+            <!-- Center: Nav Links -->
+            <div class="flex justify-center gap-8">
+                <a href="#" id="show-home"
+                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Home</a>
+                <a href="#" id="show-scraper"
+                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Scraper</a>
+                <a href="#" id="show-about"
+                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">About</a>
+                <a href="#" id="show-contact"
+                    class="text-blue-900 no-underline font-[580] transition-colors duration-200 ease-in-out capitalize hover:text-blue-800">Contact</a>
+            </div>
+
+            <!-- Right: Auth Buttons -->
+            <div class="flex justify-end items-center gap-4">
                 <button id="my-favorites-btn" class="btn-secondary" style="display: none;">
                     ❤️ My Favorites (<span id="favorites-count">0</span>)
                 </button>
@@ -31,7 +56,8 @@
                 </span>
                 <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
                 <button id="show-login" class="btn-secondary">sign in</button>
-                <button id="show-signup" class="btn-primary">connection</button>
+                <button id="show-signup"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">connection</button>
             </div>
         </div>
     </nav>

@@ -15,6 +15,13 @@
     "pg": "^8.16.3"
   },
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node api/index.js",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./public/tailwind.css",
+    "dev:css": "npx tailwindcss -i ./src/input.css -o ./public/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1"
   }
 }

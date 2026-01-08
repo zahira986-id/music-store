@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navigation Logic
     function setActiveSection(sectionName) {
+        if (window.posthog) {
+            posthog.capture('view_section', { section: sectionName });
+        }
         // Toggle visibility directly
         if (heroSection) heroSection.classList.toggle('hidden', sectionName !== 'home');
         if (instrumentsSection) instrumentsSection.classList.toggle('hidden', sectionName !== 'home');
@@ -107,6 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentUser) {
             // User is logged in
+            if (window.posthog) {
+                posthog.identify(currentUser.id.toString(), {
+                    email: currentUser.email,
+                    name: currentUser.nom
+                });
+            }
             showLoginBtn.style.display = 'none';
             showSignupBtn.style.display = 'none';
             logoutBtn.style.display = 'inline-block';
@@ -116,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateFavoritesCount();
         } else {
             // User is not logged in
+            if (window.posthog) {
+                posthog.reset();
+            }
             showLoginBtn.style.display = 'inline-block';
             showSignupBtn.style.display = 'inline-block';
             logoutBtn.style.display = 'none';
@@ -142,7 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'DELETE'
                 });
 
-                if (!response.ok) throw new Error('Failed to remove favorite');
+                if (window.posthog) {
+                    posthog.capture('remove_favorite', { instrument_id: id, instrument_name: name });
+                }
 
                 userFavorites = userFavorites.filter(fId => fId !== id);
                 showNotification(`"${name}" removed from favorites`, 'success');
@@ -154,7 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ instrument_id: id })
                 });
 
-                if (!response.ok) throw new Error('Failed to add favorite');
+                if (window.posthog) {
+                    posthog.capture('add_favorite', { instrument_id: id, instrument_name: name });
+                }
 
                 userFavorites.push(id);
                 showNotification(`"${name}" added to favorites ❤️`, 'success');
