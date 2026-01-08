@@ -32,19 +32,38 @@ body {
 
 .section-title {
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 0;
     color: var(--text-color);
 }
 
+@media (min-width: 768px) {
+    .section-title {
+        font-size: 2.5rem;
+    }
+}
 
-
-/* Grid: exactly 3 columns */
+/* Grid: responsive columns */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem;
-    padding: 2rem 0;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+}
+
+@media (min-width: 640px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+        padding: 2rem 0;
+    }
 }
 
 /* Instrument Cards */
@@ -1314,6 +1333,38 @@ body {
 #chat-input-form button:hover {
     transform: scale(1.1) rotate(-10deg);
     background: var(--primary-hover);
+}
+
+/* Form Grid Responsiveness */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.scraper-card,
+.contact-card {
+    background: var(--secondary-bg);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 768px) {
+
+    .scraper-card,
+    .contact-card {
+        padding: 2.5rem;
+    }
 }
 
 /* Mobile Responsive */

@@ -32,6 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutSection = document.getElementById('about-section');
     const contactSection = document.getElementById('contact-section');
 
+    // Mobile Nav Toggle
+    const mobileTrigger = document.getElementById('mobile-menu-trigger');
+    const mobileNavContainer = document.getElementById('mobile-nav-container');
+
+    if (mobileTrigger && mobileNavContainer) {
+        mobileTrigger.addEventListener('click', () => {
+            mobileNavContainer.classList.toggle('hidden');
+        });
+    }
+
     // Navigation Logic
     function setActiveSection(sectionName) {
         if (window.posthog) {
@@ -44,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scraperSection) scraperSection.classList.toggle('hidden', sectionName !== 'scraper');
         if (aboutSection) aboutSection.classList.toggle('hidden', sectionName !== 'about');
         if (contactSection) contactSection.classList.toggle('hidden', sectionName !== 'contact');
+
+        // Close mobile nav on click
+        const mobileNavContainer = document.getElementById('mobile-nav-container');
+        if (window.innerWidth < 768 && mobileNavContainer) {
+            mobileNavContainer.classList.add('hidden');
+        }
 
         // Reset all nav items
         document.querySelectorAll('.nav-item').forEach(a => {
@@ -145,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.style.display = 'inline-block';
             userGreeting.style.display = 'inline-block';
             userName.textContent = currentUser.nom;
+
             if (addInstrBtn) addInstrBtn.style.display = 'inline-block';
             updateFavoritesCount();
         } else {
@@ -157,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.style.display = 'none';
             userGreeting.style.display = 'none';
             userName.textContent = '';
+
             if (addInstrBtn) addInstrBtn.style.display = 'none';
             document.getElementById('my-favorites-btn').style.display = 'none';
         }
@@ -301,28 +319,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const switchToSignup = document.getElementById('switch-to-signup');
     const switchToLogin = document.getElementById('switch-to-login');
 
+    // Logout logic
+    async function handleLogout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                currentUser = null;
+                userFavorites = [];
+                updateAuthUI();
+                renderPage(currentPage); // Refresh to hide favorite hearts
+                showNotification('Logged out successfully', 'success');
+            } else {
+                throw new Error('Logout failed');
+            }
+        } catch (error) {
+            showNotification('Failed to logout', 'error');
+        }
+    }
+
     // Logout button
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
+        logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            try {
-                const response = await fetch('/logout', {
-                    method: 'POST'
-                });
-
-                if (response.ok) {
-                    currentUser = null;
-                    userFavorites = [];
-                    updateAuthUI();
-                    renderPage(currentPage); // Refresh to hide favorite hearts
-                    showNotification('Logged out successfully', 'success');
-                } else {
-                    throw new Error('Logout failed');
-                }
-            } catch (error) {
-                showNotification('Failed to logout', 'error');
-            }
+            handleLogout();
         });
     }
 

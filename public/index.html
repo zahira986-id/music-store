@@ -30,59 +30,71 @@
 
     <nav
         class="navbar sticky top-0 z-[1000] bg-blue-950/40 backdrop-blur-md border-b border-white/10 shadow-lg transition-all duration-300">
-        <div class="container mx-auto px-6 py-2 grid grid-cols-3 items-center">
-            <!-- Column 1: Brand/Logo -->
-            <div class="flex justify-start">
-                <a href="#" class="brand-logo flex items-center gap-3 no-underline group"
-                    onclick="setActiveSection('home'); return false;">
-                    <div
-                        class="bg-blue-900 p-1.5 rounded-lg transform group-hover:rotate-6 transition-transform duration-300">
-                        <img src="img/logo.png" alt="MusicStore Logo" class="h-8 w-auto">
+        <div class="container mx-auto px-4 md:px-6 py-2">
+            <!-- Top Row: Logo & Actions -->
+            <div class="flex items-center justify-between gap-4">
+                <!-- Column 1: Brand/Logo -->
+                <div class="flex items-center">
+                    <a href="#" class="brand-logo flex items-center gap-3 no-underline group"
+                        onclick="setActiveSection('home'); return false;">
+                        <div
+                            class="bg-blue-900 p-1.5 rounded-lg transform group-hover:rotate-6 transition-transform duration-300">
+                            <img src="img/logo.png" alt="MusicStore Logo" class="h-6 w-6 md:h-8 md:w-auto">
+                        </div>
+                        <span
+                            class="text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(147,197,253,0.3)] italic tracking-tighter text-white">MusicStore</span>
+                    </a>
+                </div>
+
+                <!-- Column 2: User Actions (Compact) -->
+                <div class="flex items-center gap-3 md:gap-6">
+                    <button id="my-favorites-btn"
+                        class="text-gray-300 hover:text-red-400 transition-colors flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider no-underline"
+                        style="display: none;">
+                        ❤️ <span class="hidden sm:inline">Favorites</span> (<span id="favorites-count">0</span>)
+                    </button>
+
+                    <div id="user-greeting"
+                        class="hidden items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-[9px] md:text-[10px] font-black text-blue-100 uppercase tracking-tight">Hi,
+                            <span id="user-name"></span></span>
                     </div>
-                    <span
-                        class="text-2xl drop-shadow-[0_0_15px_rgba(147,197,253,0.3)] italic tracking-tighter text-white">MusicStore</span>
-                </a>
+
+                    <button id="logout-btn"
+                        class="text-[9px] md:text-[10px] font-black text-gray-400 hover:text-red-400 transition-colors uppercase tracking-widest no-underline"
+                        style="display: none;">Logout</button>
+
+                    <div class="auth-group flex items-center gap-3 md:gap-6">
+                        <button id="show-login"
+                            class="text-[10px] md:text-sm font-semibold text-white hover:opacity-70 transition-opacity no-underline whitespace-nowrap">Sign
+                            In</button>
+                        <button id="show-signup"
+                            class="bg-blue-600 hover:bg-white hover:text-blue-900 text-white text-[9px] md:text-xs font-bold py-1.5 px-3 md:py-2.5 md:px-6 rounded-full shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all tracking-wide">Connection</button>
+                    </div>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button id="mobile-menu-trigger"
+                        class="md:hidden text-white p-1 hover:bg-white/10 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <!-- Column 2: Navigation Links (Centered) -->
-            <div class="flex justify-center flex-wrap gap-x-8 gap-y-2">
+            <!-- Bottom Row: Navigation (Toggled by Burger, Vertical on Mobile) -->
+            <div id="mobile-nav-container"
+                class="hidden flex flex-col md:flex-row items-center justify-center gap-y-4 gap-x-8 py-4 md:py-0 mt-2 border-t border-white/5 md:border-none">
                 <a href="#" id="show-home"
-                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Home</a>
+                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Home</a>
                 <a href="#" id="show-about"
-                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">About</a>
+                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">About</a>
                 <a href="#" id="show-scraper"
-                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Scraper</a>
+                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Scraper</a>
                 <a href="#" id="show-contact"
-                    class="nav-item text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline">Contact</a>
-            </div>
-
-            <!-- Column 3: User Auth / Actions -->
-            <div class="flex justify-end items-center gap-6">
-                <button id="my-favorites-btn"
-                    class="text-gray-300 hover:text-red-400 transition-colors flex items-center gap-2 font-bold text-xs uppercase tracking-wider no-underline"
-                    style="display: none;">
-                    <span class="text-base">❤️</span> <span class="hidden lg:inline">Favorites</span> (<span
-                        id="favorites-count">0</span>)
-                </button>
-
-                <div id="user-greeting"
-                    class="hidden items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-xs font-black text-blue-100 uppercase tracking-tight">Hi, <span
-                            id="user-name"></span></span>
-                </div>
-
-                <button id="logout-btn"
-                    class="text-xs font-black text-gray-400 hover:text-red-400 transition-colors uppercase tracking-widest no-underline"
-                    style="display: none;">Logout</button>
-
-                <div class="auth-group flex items-center gap-6">
-                    <button id="show-login"
-                        class="text-sm font-semibold text-white hover:opacity-70 transition-opacity no-underline whitespace-nowrap">Sign
-                        In</button>
-                    <button id="show-signup"
-                        class="bg-blue-600 hover:bg-white hover:text-blue-900 text-white text-xs font-bold py-2.5 px-6 rounded-full shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all tracking-wide">Connection</button>
-                </div>
+                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Contact</a>
             </div>
         </div>
     </nav>
@@ -286,8 +298,8 @@
 
         <!-- Scraper Section -->
         <section id="scraper-section" class="hidden">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h2 class="section-title" style="margin-bottom: 0;">Music Store Scraper</h2>
+            <div class="text-center mb-8">
+                <h2 class="section-title">Music Store Scraper</h2>
             </div>
 
             <div class="scraper-card">
@@ -298,7 +310,7 @@
                 </div>
 
                 <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Lead Generation Parameters</h3>
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="business-type">Business Type</label>
                         <input type="text" id="business-type" placeholder="e.g. Music Stores, Dentists..."
@@ -334,9 +346,9 @@
 
         <!-- Contact Section -->
         <section id="contact-section" class="hidden">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h2 class="section-title" style="margin-bottom: 0;">Contact Us</h2>
-                <p style="color: #6b7280; margin-top: 0.5rem;">We'd love to hear from you!</p>
+            <div class="text-center mb-8">
+                <h2 class="section-title">Contact Us</h2>
+                <p class="text-gray-500 mt-2">We'd love to hear from you!</p>
             </div>
 
             <div class="contact-card">
