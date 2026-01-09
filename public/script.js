@@ -3,6 +3,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let userFavorites = [];
 
+    // --- Diagnostic Error Handler ---
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+        const grid = document.getElementById('instruments-grid');
+        if (grid) {
+            grid.innerHTML = `<div class="p-4 bg-red-900/50 text-red-200 text-xs rounded-lg border border-red-500 m-4">
+                <strong>JS ERROR:</strong> ${msg}<br>
+                <small>at ${lineNo}:${columnNo}</small>
+            </div>` + grid.innerHTML;
+        }
+        return false;
+    };
+
+    // --- Cache Nuke Utility ---
+    if (window.location.search.includes('nuke=1')) {
+        console.warn('NUKE MODE: Clearing all caches and service workers');
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let registration of registrations) registration.unregister();
+            });
+        }
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        setTimeout(() => {
+            window.location.href = window.location.pathname;
+        }, 1000);
+        return;
+    }
+
     // Check if user is logged in
     async function checkAuth() {
         try {
@@ -663,16 +694,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadInstruments() {
         const grid = document.getElementById('instruments-grid');
+        grid.innerHTML = '<div class="loading">Chargement en cours... (Réseau)</div>';
         try {
             // Force network fetch with timestamp to bypass mobile cache
             const response = await fetch(`/api/instruments?t=${Date.now()}`);
-            if (!response.ok) throw new Error('Failed to fetch instruments');
+            if (!response.ok) throw new Error(`Server status: ${response.status}`);
 
             allInstruments = await response.json();
             renderPage(currentPage);
         } catch (error) {
             console.error(error);
-            grid.innerHTML = '<div class="loading">Erreur de chargement des instruments.</div>';
+            grid.innerHTML = `<div class="loading text-red-400">
+                <p>Échec du chargement : ${error.message}</p>
+                <small class="opacity-50">Vérifiez votre connexion ou les variables Vercel.</small>
+            </div>`;
         }
     }
 
@@ -824,9 +859,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize app
-    checkAuth().then(() => {
-        loadBrands();
-        loadInstruments();
-    });
+    // Initialize app - Running in parallel to avoid one hang blocking the rest
+    checkAuth();
+    loadBrands();
+    loadInstruments();
 });
