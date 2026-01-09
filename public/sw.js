@@ -1,5 +1,5 @@
 // Service Worker for MusicStore PWA
-const CACHE_NAME = 'musicstore-v2';
+const CACHE_NAME = 'musicstore-v3';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -46,11 +46,28 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
     // Skip cross-origin requests
     if (!event.request.url.startsWith(self.location.origin)) {
         return;
     }
 
+    // NETWORK ONLY for API calls - Never cache dynamic data
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(
+            fetch(event.request).catch(() => {
+                // If network fails for API, return a 503 instead of a cached page
+                return new Response(JSON.stringify({ error: 'Offline - server unreachable' }), {
+                    status: 503,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            })
+        );
+        return;
+    }
+
+    // CACHE FIRST for static assets
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
