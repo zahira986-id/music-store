@@ -51,7 +51,19 @@
                     </a>
                 </div>
 
-                <!-- Column 2: User Actions (Compact) -->
+                <!-- Column 2: Desktop Navigation (Hidden on Mobile) -->
+                <div class="hidden md:flex items-center gap-8 px-10">
+                    <a href="#"
+                        class="nav-item show-home text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Home</a>
+                    <a href="#"
+                        class="nav-item show-about text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">About</a>
+                    <a href="#"
+                        class="nav-item show-scraper text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Scraper</a>
+                    <a href="#"
+                        class="nav-item show-contact text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Contact</a>
+                </div>
+
+                <!-- Column 3: User Actions & Mobile Toggle -->
                 <div class="flex items-center gap-3 md:gap-6">
                     <button id="my-favorites-btn"
                         class="text-gray-300 hover:text-red-400 transition-colors flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider no-underline"
@@ -78,10 +90,9 @@
                             class="bg-blue-600 hover:bg-white hover:text-blue-900 text-white text-[9px] md:text-xs font-bold py-1.5 px-3 md:py-2.5 md:px-6 rounded-full shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all tracking-wide">Connection</button>
                     </div>
 
-                    <!-- Mobile Menu Toggle -->
                     <button id="mobile-menu-trigger"
                         class="md:hidden text-white p-1 hover:bg-white/10 rounded-lg transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16m-7 6h7"></path>
                         </svg>
@@ -89,17 +100,22 @@
                 </div>
             </div>
 
-            <!-- Bottom Row: Navigation (Toggled by Burger, Vertical on Mobile) -->
+            <!-- Mobile Navbar Overlay (Vertical) -->
             <div id="mobile-nav-container"
-                class="hidden md:flex flex-col md:flex-row items-center justify-center gap-y-4 gap-x-8 py-4 md:py-0 mt-2 border-t border-white/5 md:border-none">
-                <a href="#" id="show-home"
-                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Home</a>
-                <a href="#" id="show-about"
-                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">About</a>
-                <a href="#" id="show-scraper"
-                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Scraper</a>
-                <a href="#" id="show-contact"
-                    class="nav-item text-sm md:text-[14px] font-bold text-gray-400 hover:text-white transition-colors tracking-wide no-underline uppercase">Contact</a>
+                class="hidden md:hidden fixed inset-0 top-[60px] bg-blue-950/95 backdrop-blur-2xl z-[99] flex flex-col items-center justify-center gap-8 py-8 animate-in slide-in-from-right duration-300">
+                <a href="#"
+                    class="nav-item show-home text-2xl font-bold text-gray-400 hover:text-white transition-colors tracking-widest no-underline uppercase">Home</a>
+                <a href="#"
+                    class="nav-item show-about text-2xl font-bold text-gray-400 hover:text-white transition-colors tracking-widest no-underline uppercase">About</a>
+                <a href="#"
+                    class="nav-item show-scraper text-2xl font-bold text-gray-400 hover:text-white transition-colors tracking-widest no-underline uppercase">Scraper</a>
+                <a href="#"
+                    class="nav-item show-contact text-2xl font-bold text-gray-400 hover:text-white transition-colors tracking-widest no-underline uppercase">Contact</a>
+
+                <div class="w-12 h-0.5 bg-blue-500/30 rounded-full my-4"></div>
+
+                <button onclick="document.getElementById('mobile-nav-container').classList.add('hidden')"
+                    class="text-blue-400 text-xs font-bold uppercase tracking-widest border border-blue-400/30 px-6 py-2 rounded-full">Fermer</button>
             </div>
         </div>
     </nav>

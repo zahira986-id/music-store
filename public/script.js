@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Navigation Elements
-    const showHomeBtn = document.getElementById('show-home');
-    const showScraperBtn = document.getElementById('show-scraper');
-    const showAboutBtn = document.getElementById('show-about');
-    const showContactBtn = document.getElementById('show-contact');
+    const getHomeBtns = () => document.querySelectorAll('.show-home');
+    const getScraperBtns = () => document.querySelectorAll('.show-scraper');
+    const getAboutBtns = () => document.querySelectorAll('.show-about');
+    const getContactBtns = () => document.querySelectorAll('.show-contact');
 
     const heroSection = document.getElementById('hero-section');
     const instrumentsSection = document.getElementById('instruments-section');
@@ -99,31 +99,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Highlight active link
-        const activeBtnMap = {
-            'home': showHomeBtn,
-            'scraper': showScraperBtn,
-            'about': showAboutBtn,
-            'contact': showContactBtn
+        const activeClassMap = {
+            'home': '.show-home',
+            'scraper': '.show-scraper',
+            'about': '.show-about',
+            'contact': '.show-contact'
         };
 
-        const activeBtn = activeBtnMap[sectionName];
-        if (activeBtn) {
-            activeBtn.classList.remove('text-gray-400');
-            activeBtn.classList.add('!text-white');
+        const activeClass = activeClassMap[sectionName];
+        if (activeClass) {
+            document.querySelectorAll(activeClass).forEach(btn => {
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('!text-white');
+            });
         }
     }
 
-    if (showHomeBtn) showHomeBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); });
+    getHomeBtns().forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); }));
 
     // Brand Logo click
     const brandLogo = document.querySelector('.brand-logo');
     if (brandLogo) brandLogo.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('home'); });
 
-    if (showAboutBtn) showAboutBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('about'); });
+    getAboutBtns().forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('about'); }));
     const backToHome = document.getElementById('back-to-home');
     if (backToHome) backToHome.addEventListener('click', () => setActiveSection('home'));
 
-    if (showScraperBtn) showScraperBtn.addEventListener('click', (e) => {
+    getScraperBtns().forEach(btn => btn.addEventListener('click', (e) => {
         e.preventDefault();
         if (!currentUser) {
             showNotification('Please login to use the Scraper tools', 'error');
@@ -131,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         setActiveSection('scraper');
-    });
+    }));
 
-    if (showContactBtn) showContactBtn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('contact'); });
+    getContactBtns().forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); setActiveSection('contact'); }));
 
     // Allow scraper.js to just handle scraping, we handle nav here.
     // Ensure we start at home

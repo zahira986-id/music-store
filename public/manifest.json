@@ -41,5 +41,21 @@
     ],
     "lang": "fr-FR",
     "dir": "ltr",
-    "prefer_related_applications": false
+    "prefer_related_applications": false,
+    "screenshots": [
+        {
+            "src": "/img/screenshot-mobile.png",
+            "sizes": "640x640",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "MusicStore sur Mobile"
+        },
+        {
+            "src": "/img/screenshot-desktop.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "MusicStore sur Ordinateur"
+        }
+    ]
 }

@@ -1,5 +1,5 @@
 // Service Worker for MusicStore PWA
-const CACHE_NAME = 'musicstore-v8';
+const CACHE_NAME = 'musicstore-v9';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -11,7 +11,9 @@ const urlsToCache = [
     '/manifest.json',
     '/img/icon-192.png',
     '/img/icon-512.png',
-    '/img/hero-bg.png'
+    '/img/hero-bg.png',
+    '/img/screenshot-mobile.png',
+    '/img/screenshot-desktop.png'
 ];
 
 // Install event - cache resources
