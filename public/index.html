@@ -612,6 +612,39 @@
             });
         }
     </script>
+    <!-- Debug Overlay for Mobile -->
+    <div id="debug-overlay"
+        class="fixed bottom-0 left-0 w-full bg-black/80 text-white text-[10px] font-mono p-2 z-[9999] max-h-32 overflow-y-auto hidden">
+        <div class="flex justify-between items-center mb-1">
+            <span class="font-bold">DEBUG CONSOLE</span>
+            <button onclick="this.parentElement.parentElement.classList.add('hidden')"
+                class="bg-red-500 px-1 rounded text-[8px]">CLOSE</button>
+        </div>
+        <div id="debug-log"></div>
+    </div>
+    <script>
+        // Show debug overlay if ?debug=1
+        if (window.location.search.includes('debug=1')) {
+            document.getElementById('debug-overlay').classList.remove('hidden');
+        }
+
+        const debugLog = document.getElementById('debug-log');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function appendDebug(msg, type = 'info') {
+            const div = document.createElement('div');
+            const colors = { info: 'text-white', error: 'text-red-400', warn: 'text-yellow-400' };
+            div.className = colors[type];
+            div.innerText = `${new Date().toLocaleTimeString()}: ${msg}`;
+            debugLog.prepend(div);
+        }
+
+        console.log = (...args) => { appendDebug(args.join(' '), 'info'); originalLog.apply(console, args); };
+        console.error = (...args) => { appendDebug(args.join(' '), 'error'); originalError.apply(console, args); };
+        console.warn = (...args) => { appendDebug(args.join(' '), 'warn'); originalWarn.apply(console, args); };
+    </script>
 </body>
 
 </html>
