@@ -146,9 +146,14 @@ app.post('/api/chat', async (req, res) => {
 
 app.get('/api/instruments', async (req, res) => {
     try {
+        console.log(`[API] Fetching all instruments requested from ${req.ip}`);
         const result = await pool.query('SELECT * FROM instrument');
+        console.log(`[API] Success: Found ${result.rows.length} instruments`);
         res.json(result.rows);
-    } catch (error) { res.status(500).json({ error: 'Failed' }); }
+    } catch (error) {
+        console.error('[API] Error fetching instruments:', error);
+        res.status(500).json({ error: 'Failed to fetch instruments from database' });
+    }
 });
 
 app.post('/api/instruments', async (req, res) => {
@@ -240,6 +245,8 @@ module.exports = app;
 
 // Local server
 const PORT_FINAL = process.env.PORT || 3001;
-app.listen(PORT_FINAL, () => {
-    console.log(`Server running on http://localhost:${PORT_FINAL}`);
+app.listen(PORT_FINAL, '0.0.0.0', () => {
+    console.log(`🚀 Server started on all interfaces!`);
+    console.log(`🏠 Local: http://localhost:${PORT_FINAL}`);
+    console.log(`🌐 Network: http://192.168.1.178:${PORT_FINAL}`);
 });
