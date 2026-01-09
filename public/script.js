@@ -664,26 +664,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadInstruments() {
         const grid = document.getElementById('instruments-grid');
         try {
-            console.log('[DEBUG] loadInstruments called');
-            // showNotification('Chargement des instruments...', 'info');
-
-            const response = await fetch('/api/instruments');
-            console.log('[DEBUG] fetch response status:', response.status);
-
-            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            // Force network fetch with timestamp to bypass mobile cache
+            const response = await fetch(`/api/instruments?t=${Date.now()}`);
+            if (!response.ok) throw new Error('Failed to fetch instruments');
 
             allInstruments = await response.json();
-            console.log('[DEBUG] loaded instruments count:', allInstruments.length);
-
             renderPage(currentPage);
-
-            if (allInstruments.length > 0) {
-                showNotification(`${allInstruments.length} instruments chargés`, 'success');
-            }
         } catch (error) {
-            console.error('[DEBUG] loadInstruments error:', error);
-            grid.innerHTML = `<div class="loading text-red-500">Erreur de chargement: ${error.message}</div>`;
-            showNotification(`Erreur: ${error.message}`, 'error');
+            console.error(error);
+            grid.innerHTML = '<div class="loading">Erreur de chargement des instruments.</div>';
         }
     }
 
@@ -693,7 +682,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const prevBtn = document.getElementById('prev-page');
         const nextBtn = document.getElementById('next-page');
 
-        console.log(`[DEBUG] renderPage called for page ${page}. Total items: ${allInstruments.length}`);
         grid.innerHTML = ''; // Clear
 
         if (allInstruments.length === 0) {
