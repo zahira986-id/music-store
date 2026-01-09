@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e3a8a">
     <title>MusicStore</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/img/icon-512.png">
+    <link rel="apple-touch-icon" href="/img/icon-512.png">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="tailwind.css">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,7 +44,7 @@
                         onclick="setActiveSection('home'); return false;">
                         <div
                             class="bg-blue-900 p-1.5 rounded-lg transform group-hover:rotate-6 transition-transform duration-300">
-                            <img src="img/logo.jpg" alt="MusicStore Logo" class="h-6 w-6 md:h-8 md:w-auto">
+                            <img src="img/icon-192.png" alt="MusicStore Logo" class="h-6 w-6 md:h-8 md:w-8">
                         </div>
                         <span
                             class="text-lg md:text-2xl drop-shadow-[0_0_15px_rgba(147,197,253,0.3)] italic tracking-tighter text-white">MusicStore</span>
@@ -592,6 +597,21 @@
     <script src="script.js"></script>
     <script src="scraper.js"></script>
     <script src="chatbot.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>
