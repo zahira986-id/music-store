@@ -92,10 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileNavContainer.classList.add('hidden');
         }
 
-        // Reset all nav items
+        // Reset all nav items - Styling is now handled by CSS !important
         document.querySelectorAll('.nav-item').forEach(a => {
-            a.classList.remove('text-white', '!text-white');
-            a.classList.add('text-gray-400');
+            a.classList.remove('active');
         });
 
         // Highlight active link
@@ -109,8 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeClass = activeClassMap[sectionName];
         if (activeClass) {
             document.querySelectorAll(activeClass).forEach(btn => {
-                btn.classList.remove('text-gray-400');
-                btn.classList.add('!text-white');
+                btn.classList.add('active');
             });
         }
     }

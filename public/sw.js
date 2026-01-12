@@ -1,5 +1,5 @@
 // Service Worker for MusicStore PWA
-const CACHE_NAME = 'musicstore-v9';
+const CACHE_NAME = 'musicstore-v11';
 const urlsToCache = [
     '/',
     '/index.html',
